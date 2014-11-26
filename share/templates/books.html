@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} - Books{% endblock %}
+
+{% block side_col %}
+    {% include 'left_sidebar.html' %}
+{% endblock %}
+
+{% block main_col %}
+    <h4>Python</h4>
+    {% for book in python_books %}
+        <li><a href="{{ book.url }}">{{ book.name }}</a></li>
+    {% endfor %}
+    </br>
+    <h4>Java</h4>
+    {% for book in java_books %}
+        <li><a href="{{ book.url }}">{{ book.name }}</a></li>
+    {% endfor %}
+{% endblock %}

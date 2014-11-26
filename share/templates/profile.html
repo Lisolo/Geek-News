@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} - Profile{% endblock %}
+
+{% block main_col %}
+<div class="hero-unit">
+    <h1>Profile</h1><br />
+    <h2>{{ user.username }}</h2>
+    <p>Email: {{ user.email }}</p>
+    {% if userprofile %}
+        <p>Website: <a href="{{ userprofile.website }}">{{ userprofile.website }}</a></p>
+        {% if userprofile.picture %}
+           <img src="{{ userprofile.picture.url }}" />
+        {% endif %}
+           <p>Gender: {{ userprofile.gender }}</p>
+           <p>Join in: {{ userprofile.join }}</p>
+    {% endif %}
+    
+    {% if news %}
+        <label>Post</label>
+        {% for new in news %}
+            <li><a href="{{ new.url }}">{{ new.title }}</a></li>
+        {% endfor %}
+    {% endif %}
+
+    {% if comments %}
+        <label>Comments</label>
+        {% for comment in comments %}
+           <li><a href="{{ comment.news.url }}">{{ comment.news }}</a>-{{ comment.content }}{{ comment.time }}</li>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} - comments{% endblock %}
+
+{% block main_col %}
+    {% for comment in comments %}
+        <li>{{ comment.content }}-{{ comment.points }}points-{{ comment.time }}<a href="/share/user/{{ comment.user }}">{{ comment.user }}</a></li>
+    {% endfor %}
+    {% if user.is_authenticated %}
+    <form id="news_form" method="post" action="/share/add_comments/{{ news_title_url }}/">
+    {% csrf_token %}
+    {% for field in form.visible_fields %}
+    	{{ field.help_text }}
+    	{{ field }}
+    	<p></p>
+    	<p></p>
+    	<div class="row clearfix">
+    	    <button class="btn btn-info" type="submit">Add comment</button>
+    	</div>
+    {% endfor %}
+    </form>
+    {% endif %}
+{% endblock %}

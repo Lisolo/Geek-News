@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} - {{ category_name }}{% endblock %}
+
+{% block side_col %}
+    {% include 'left_sidebar.html' %}
+{% endblock %}
+
+{% block main_col %}
+<div class="row clearfix">
+    <h1>{{ category_name }}</h1>
+    {% if category %}
+    <p>
+        <b id="like-category-count">{{ category.likes }}</b> people like this category
+        {% if user.is_authenticated %}
+            <button id ="likes-category" data-catid="{{category.id}}" class="glyphicon glyphicon-heart" type="button"></button>
+        {% endif %}
+    </p>
+    <br/>
+    <div id="news">
+    {% if news %}
+
+    {% load endless %}
+    {% paginate news %}
+
+    {% if user.is_authenticated %}
+        <ul>
+            {% for new in news %}
+            <li>
+                <a href="/share/goto/?new_id={{ new.id }}">{{ new.title }}</a>-<a href="/share/user/{{ new.author }}">{{ new.author }}</a>
+                {% if new.views > 1 %}
+                    ({{ new.views }} views){{ new.time }}
+                {% else %}
+                    ({{ new.views }} view){{ new.time }}
+                {% endif %}
+                <h5>
+                <b id="like-new-count">{{ new.likes }}</b>
+                    <button id ="likes-new" data-catid="{{ new.id }}" class="glyphicon glyphicon-thumbs-up" type="button"></button>likes
+                <b id="dislike-new-count">{{ new.dislikes }}</b>
+                    <button id ="dislikes-new" data-catid="{{ new.id }}" class="glyphicon glyphicon-thumbs-down" type="button"></button>dislikes
+                {% if new.comments %}
+                    <a href="/share/add_comments/{{ new.url }}">{{ new.comments }} comments</a>
+                {% else %}
+                  <a href="/share/add_comments/{{ new.url }}">discuss</a>
+                {% endif %}
+                </h5>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <ul>
+            {% for new in news %}
+            <li>
+                <a href="/share/goto/?new_id={{ new.id }}">{{ new.title }}</a>-<a href="/share/user/{{ new.author }}">{{ new.author }}</a>
+                {% if new.views > 1 %}
+                    ({{ new.views }} views){{ new.time }}
+                {% else %}
+                    ({{ new.views }} view){{ new.time }}
+                {% endif %}
+                <h5>
+                <b id="like-new-count">{{ new.likes }}</b>
+                    likes
+                <b id="dislike-new-count">{{ new.dislikes }}</b>
+                    dislikes
+                {% if new.comments %}
+                    <a href="/share/add_comments/{{ new.url }}">{{ new.comments }} comments</a>
+                {% else %}
+                  <a href="/share/add_comments/{{ new.url }}">discuss</a>
+                {% endif %}
+                </h5>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% show_pages %}
+
+        {% else %}
+            <strong>No news currently in category.</strong><br/>
+        {% endif %}
+    </div>
+    </br>
+    {% if user.is_authenticated %}
+        <a href="/share/category/{{ category_name_url }}/add_news/" class="btn btn-info">Add News</a>
+    {% endif %}
+</div>
+<hr>
+</hr>
+<div class="row">
+    <div class="container-fluid">
+        <p>Search for a page.</p>
+        <form class="span8 form-search" id="search_form" method="post" action="/share/category/{{ category_name_url }}/">
+            {% csrf_token %}
+            <div class="col-md-4">
+                <input type="text" class="form-control"  name="query" value="{{ category_name }}" id="query" />
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success" name="submit" value="Search">Search</button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="container-fluid">
+        {% if result_list %}
+            {% load endless %}
+            {% paginate result_list %}
+            <!-- Display search results in an ordered list -->
+            <ol>
+                {% for result in result_list %}
+                <li>
+                    {% if user.is_authenticated %}
+                    <button id="share-add" data-catid="{{category.id}}" data-title="{{ result.title }}" data-url="{{ result.link }}" class="share-add btn btn-mini btn-info" type="button">Add</button>
+                    {% endif %}
+                    <strong><a href="{{ result.link }}">{{ result.title }}</a></strong><br />
+                    <p>{{ result.summary }}</p>
+                </li>
+                {% endfor %}
+            </ol>
+            {% show_pages %}
+        {% else %}
+            <br/>
+            <p>No results found</p>
+        {% endif %}
+    </div>
+    {% else %}
+        The specified category {{ category_name }} does not exist!</div>
+    {% endif %}
+</div>
+{% endblock %}

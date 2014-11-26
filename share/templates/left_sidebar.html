@@ -1,0 +1,14 @@
+<div class="jumbotron">
+    <ul class="nav nav-list">
+        <h4 class="nav-header">Search News</h4>
+        <form>
+            <label></label>
+            <input  class="form-control" type="text" placeholder="Search" name="suggestion"  id="suggestion1" />
+        </form>
+    </ul>
+    {% if news_list %}
+    <div id="news">
+        {% include 'news_list.html' with news_list=news_list %}
+    </div>
+    {% endif %}
+</div>

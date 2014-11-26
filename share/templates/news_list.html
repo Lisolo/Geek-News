@@ -1,0 +1,9 @@
+<ul class="nav nav-list">
+	{% if news_list %}
+ 	    {% for news in news_list %}
+		  <li><a href="/share/category/{{ news.url }}">{{ news.title }}</a></li>
+		{% endfor %}
+	{% else %}
+		<li>No categories at present.</li>
+	{% endif %}
+</ul>

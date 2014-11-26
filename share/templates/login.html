@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} - Login to share{% endblock %}
+
+{% block main_col %}
+<div class="col-md-9 column">
+    <div class="jumbotron">
+        <h2>Login to share</h2>
+        <form class="form-signin span4" id="login_form" method="post" action="/share/login/">
+            <h2 class="form-signin-heading">Please sign in</h2>
+            {% if bad_details %}
+            <p><strong>Your username and/or password were incorrect!</strong></p>
+            {% elif disabled_account %}
+            <p><strong>Your startup news account is currently disables; we can't log you in!</strong></p>
+            {% endif %}
+
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Username:</label> 
+                <input type="text" class="form-control" placeholder="Username" name="username"/>
+                <h5 class="text-danger">{{ user_error }}</h5>
+            </div>
+            <div calss="form-group">
+                <label>
+                    Password <a href="/share/password_reset">(forgot password)</a>
+                </label>
+                <input type="password" class="form-control" placeholder="Password" name="password"/>
+                <h5 class="text-danger">{{ password_error }}</h5>
+            </div>
+            <br/>
+            <div class="form-group">
+                <button class="btn btn-success" type="submit">Sign in</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
