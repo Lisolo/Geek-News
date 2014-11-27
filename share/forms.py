@@ -4,6 +4,36 @@ from django.contrib.auth.models import User
 
 from .models import News, Comments, Category, UserProfile
 
+class UserForm(forms.ModelForm):
+    username = forms.CharField(help_text="Username")
+    username.widget.attrs['class'] = 'input-sm form-control'
+
+    email = forms.CharField(help_text="Email")
+    email.widget.attrs['class'] = 'form-control'
+
+    password = forms.CharField(widget=forms.PasswordInput(), help_text="Password")
+    password.widget.attrs['class'] = 'input-sm form-control'
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password',)
+
+class UserProfileForm(forms.ModelForm):
+    GENDER = (
+        ('F', 'Female'),
+        ('M', 'Male'),
+        )
+
+    website = forms.URLField(help_text="Please enter your website.", required=False)
+    website.widget.attrs['class'] = 'input-sm form-control'
+
+    gender = forms.ChoiceField(help_text="Gender", widget=forms.RadioSelect, choices=GENDER)
+
+    picture = forms.ImageField(help_text="Select a profile image to upload.", required=False)
+    
+    class Meta:
+        model = UserProfile
+        fields = ('website', 'picture', 'gender',) 
 
 class CategoryForm(forms.ModelForm):
     name = forms.CharField(max_length=128, help_text="Please enter the category name.")
@@ -52,35 +82,4 @@ class CommentsForm(forms.ModelForm):
 
     class Meta:
         model = Comments
-        fields = ('content',)
-
-class UserForm(forms.ModelForm):
-    username = forms.CharField(help_text="Username")
-    username.widget.attrs['class'] = 'input-sm form-control'
-
-    email = forms.CharField(help_text="Email")
-    email.widget.attrs['class'] = 'form-control'
-
-    password = forms.CharField(widget=forms.PasswordInput(), help_text="Password")
-    password.widget.attrs['class'] = 'input-sm form-control'
-
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'password',)
-
-class UserProfileForm(forms.ModelForm):
-    GENDER = (
-        ('F', 'Female'),
-        ('M', 'Male'),
-        )
-
-    website = forms.URLField(help_text="Please enter your website.", required=False)
-    website.widget.attrs['class'] = 'input-sm form-control'
-
-    gender = forms.ChoiceField(help_text="Gender", widget=forms.RadioSelect, choices=GENDER)
-
-    picture = forms.ImageField(help_text="Select a profile image to upload.", required=False)
-    
-    class Meta:
-        model = UserProfile
-        fields = ('website', 'picture', 'gender',)    
+        fields = ('content',)   

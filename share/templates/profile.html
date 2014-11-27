@@ -3,31 +3,43 @@
 {% block title %}{{ block.super }} - Profile{% endblock %}
 
 {% block main_col %}
-<div class="hero-unit">
-    <h1>Profile</h1><br />
-    <h2>{{ user.username }}</h2>
-    <p>Email: {{ user.email }}</p>
-    {% if userprofile %}
-        <p>Website: <a href="{{ userprofile.website }}">{{ userprofile.website }}</a></p>
-        {% if userprofile.picture %}
-           <img src="{{ userprofile.picture.url }}" />
+<div class="col-md-offset-3">
+    <h1>Profile</h1>
+    <h2>{{ another_user.username }}</h2>
+    <p>Email: {{ another_user.email }}</p>
+    {% if user_profile %}
+        <p>Website: <a href="{{ user_profile.website }}">{{ user_profile.website }}</a></p>
+        {% if user_profile.picture %}
+           <img src="{{ user_profile.picture.url }}" />
         {% endif %}
-           <p>Gender: {{ userprofile.gender }}</p>
-           <p>Join in: {{ userprofile.join }}</p>
+           <p>Gender: {{ user_profile.gender }}</p>
+           <p>Join in: {{ user_profile.join }}</p>
     {% endif %}
     
     {% if news %}
         <label>Post</label>
+        {% load endless %}
+        {% paginate news %}
+
         {% for new in news %}
             <li><a href="{{ new.url }}">{{ new.title }}</a></li>
         {% endfor %}
+
+        {% show_pages %}
     {% endif %}
 
     {% if comments %}
+    <div class="row">
         <label>Comments</label>
+        {% load endless %}
+        {% paginate comments %}
+
         {% for comment in comments %}
            <li><a href="{{ comment.news.url }}">{{ comment.news }}</a>-{{ comment.content }}{{ comment.time }}</li>
         {% endfor %}
+
+        {% show_pages %}
+    </div>
     {% endif %}
 </div>
 {% endblock %}

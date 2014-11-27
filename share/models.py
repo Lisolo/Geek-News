@@ -3,6 +3,24 @@ from django.db import models
 from django.contrib.auth.models import User 
 
 
+class UserProfile(models.Model):
+    # This line is required. Links UserProfile to a User model instance.
+    GENDER = (
+        ('F', 'Female'),
+        ('M', 'Male'),
+        )
+    user = models.OneToOneField(User)
+
+    # The additional attributes we wish to include.
+    join = models.DateField()
+    gender = models.CharField(max_length=1, choices=GENDER)
+    website = models.URLField(blank=True)
+    picture = models.ImageField(upload_to='profile_images', blank=True)
+
+    # Override the __unicode__() method to return out something meaningful!
+    def __str__(self):
+        return self.user.username
+
 class Category(models.Model):
     name = models.CharField(max_length=128, unique=True)
     views = models.IntegerField(default=0)
@@ -10,6 +28,14 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+class LikeCategory(models.Model):
+    user = models.ForeignKey(User)
+    category = models.CharField(max_length=128, unique=True)
+
+    def __str__(self):
+        return self.user.username + '-' + self.category
+        
 
 class Book(models.Model):
     category = models.ForeignKey(Category)
@@ -42,22 +68,3 @@ class Comments(models.Model):
 
     def __str__(self):
         return self.content
-
-
-class UserProfile(models.Model):
-    # This line is required. Links UserProfile to a User model instance.
-    GENDER = (
-        ('F', 'Female'),
-        ('M', 'Male'),
-        )
-    user = models.OneToOneField(User)
-
-    # The additional attributes we wish to include.
-    join = models.DateField()
-    gender = models.CharField(max_length=1, choices=GENDER)
-    website = models.URLField(blank=True)
-    picture = models.ImageField(upload_to='profile_images', blank=True)
-
-    # Override the __unicode__() method to return out something meaningful!
-    def __str__(self):
-        return self.user.username

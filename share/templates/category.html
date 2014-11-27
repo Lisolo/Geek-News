@@ -7,13 +7,15 @@
 {% endblock %}
 
 {% block main_col %}
-<div class="row clearfix">
+<div class="col-md-offset-3">
     <h1>{{ category_name }}</h1>
     {% if category %}
     <p>
         <b id="like-category-count">{{ category.likes }}</b> people like this category
         {% if user.is_authenticated %}
-            <button id ="likes-category" data-catid="{{category.id}}" class="glyphicon glyphicon-heart" type="button"></button>
+            {% if not like %}
+                <button id ="likes-category" data-catid="{{category.id}}" class="glyphicon glyphicon-heart" type="button"></button>
+            {% endif %}
         {% endif %}
     </p>
     <br/>
@@ -23,10 +25,9 @@
     {% load endless %}
     {% paginate news %}
 
-    {% if user.is_authenticated %}
-        <ul>
+       {% if user.is_authenticated %}
             {% for new in news %}
-            <li>
+            <div class="row">
                 <a href="/share/goto/?new_id={{ new.id }}">{{ new.title }}</a>-<a href="/share/user/{{ new.author }}">{{ new.author }}</a>
                 {% if new.views > 1 %}
                     ({{ new.views }} views){{ new.time }}
@@ -44,13 +45,11 @@
                   <a href="/share/add_comments/{{ new.url }}">discuss</a>
                 {% endif %}
                 </h5>
-            </li>
+            </div>
             {% endfor %}
-        </ul>
         {% else %}
-        <ul>
             {% for new in news %}
-            <li>
+            <div class="row">
                 <a href="/share/goto/?new_id={{ new.id }}">{{ new.title }}</a>-<a href="/share/user/{{ new.author }}">{{ new.author }}</a>
                 {% if new.views > 1 %}
                     ({{ new.views }} views){{ new.time }}
@@ -68,9 +67,8 @@
                   <a href="/share/add_comments/{{ new.url }}">discuss</a>
                 {% endif %}
                 </h5>
-            </li>
+            </div>
             {% endfor %}
-        </ul>
         {% endif %}
 
         {% show_pages %}

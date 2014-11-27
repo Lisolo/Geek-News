@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from .models import Category, News, Comments, UserProfile, Book
+from .models import Category, LikeCategory, News, Comments, UserProfile, Book
 from .bing_search import run_query
 from .forms import CategoryForm, NewsForm, CommentsForm, UserForm, UserProfileForm
 
@@ -106,6 +106,8 @@ def category(request, category_name_url):
         # Adds our results list to the template context under name News.
         context_dict['news'] = news_list
 
+
+
         # We also add the category object from the database to the context dictionary.
         # We'll use this in the template to verify that the category exists.
     except Category.DoesNotExist:
@@ -113,6 +115,13 @@ def category(request, category_name_url):
         # Don't do anything - the template displays the "no category" message for us.
         pass
     
+    u = User.objects.get(username=request.user)
+    like_category = LikeCategory.objects.filter(user=u)
+    for x in like_category:
+        if x.category == category.name: 
+            context_dict['like'] = True
+        else:
+            context_dict['like'] = False
     if request.method == 'POST':
         query = request.POST.get('query')
         if query:
@@ -178,8 +187,8 @@ def user_profile(request, author):
     except:
         comments = None
 
-    context_dict['user'] = u
-    context_dict['userprofile'] = up
+    context_dict['another_user'] = u
+    context_dict['user_profile'] = up
     context_dict['news'] = news_list
     context_dict['comments'] = comments
 
@@ -324,8 +333,8 @@ def profile(request):
     except:
         comments = None
 
-    context_dict['user'] = u
-    context_dict['userprofile'] = up
+    context_dict['another_user'] = u
+    context_dict['user_profile'] = up
     context_dict['news'] = news_list
     context_dict['comments'] = comments
     return render(request, 'profile.html', context_dict)
@@ -344,6 +353,12 @@ def like_category(request):
             likes = category.likes + 1
             category.likes = likes
             category.save()
+        u = User.objects.get(username=request.user)
+        try:
+            like_category = LikeCategory(user=u, category=category.name)
+            like_category.save()
+        except:
+            pass
             
     return HttpResponse(likes)
 
