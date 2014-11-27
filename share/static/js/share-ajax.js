@@ -8,21 +8,21 @@ $(document).ready(function() {
 		});
 	});
 
-	$('#likes-new').click(function() {
+	$('#likes-news').click(function() {
 		var catid;
 		catid = $(this).attr("data-catid");
-		$.get('/share/like_new/', {new_id: catid}, function(data) {
-			$('#like-new-count').html(data);
-			$('#likes-new').hide()
+		$.get('/share/likes_news/', {new_id: catid}, function(data) {
+			$('#likes-news-count').html(data);
+			$('#likes-news').hide()
 		});
 	});
 
-	$('#dislikes-new').click(function() {
+	$('#dislikes-news').click(function() {
 		var catid;
 		catid = $(this).attr("data-catid");
-		$.get('/share/dislike_new/', {new_id: catid}, function(data) {
-			$('#dislike-new-count').html(data);
-			$('#dislikes-new').hide()
+		$.get('/share/dislikes_news/', {new_id: catid}, function(data) {
+			$('#dislikes-news-count').html(data);
+			$('#dislikes-news').hide()
 		});
 	});
 	

@@ -35,7 +35,6 @@ class LikeCategory(models.Model):
 
     def __str__(self):
         return self.user.username + '-' + self.category
-        
 
 class Book(models.Model):
     category = models.ForeignKey(Category)
@@ -58,6 +57,20 @@ class News(models.Model):
 
     def __str__(self):
         return self.title
+
+class LikeNews(models.Model):
+    user = models.ForeignKey(User)
+    news = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.user.username + '-' + self.news
+
+class DislikeNews(models.Model):
+    user = models.ForeignKey(User)
+    news = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.user.username + '-' + self.news  
 
 class Comments(models.Model):
     user = models.ForeignKey(User)

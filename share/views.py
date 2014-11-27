@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from .models import Category, LikeCategory, News, Comments, UserProfile, Book
+from .models import Category, LikeCategory, News, LikeNews, DislikeNews, Comments, UserProfile, Book
 from .bing_search import run_query
 from .forms import CategoryForm, NewsForm, CommentsForm, UserForm, UserProfileForm
 
@@ -95,6 +95,10 @@ def category(request, category_name_url):
         # Retrieve all of the associated News.
         # Note that filter returns >= 1 model instance.
         news_list = News.objects.filter(category=category).order_by('-views')
+        
+        u = User.objects.get(username=request.user)
+        like_list = LikeNews.objects.filter(user=u)
+        dislike_list = DislikeNews.objects.filter(user=u)
 
         for news in news_list:
             news.url = encode_url(news.title)
@@ -102,6 +106,21 @@ def category(request, category_name_url):
                 news.comments = Comments.objects.filter(news=news).count()
             except:
                 news.comments = None
+            
+            #determine whether user click the like button
+            for x in like_list:
+                if news.title == x.news:
+                    news.like = True
+                    break
+                else:
+                    news.like = False
+            #determine whether user click the dislike button
+            for x in dislike_list:
+                if news.title == x.news:
+                    news.dislike = True
+                    break
+                else:
+                    news.dislike = False
 
         # Adds our results list to the template context under name News.
         context_dict['news'] = news_list
@@ -114,12 +133,12 @@ def category(request, category_name_url):
         # We get here if we didn't find the specified category.
         # Don't do anything - the template displays the "no category" message for us.
         pass
-    
-    u = User.objects.get(username=request.user)
+
     like_category = LikeCategory.objects.filter(user=u)
     for x in like_category:
         if x.category == category.name: 
             context_dict['like'] = True
+            break
         else:
             context_dict['like'] = False
     if request.method == 'POST':
@@ -253,7 +272,7 @@ def add_news(request, category_name_url):
             author = User.objects.get(username=request.user)
             # Save the author of news.
             news.author = author
-            # Get the edit time and save to the time of news.
+            # Get the current time and save it to news.time.
             news.time = datetime.now().strftime('%Y-%m-%d')
             # With this, we can then save our new model instance.
             news.save()
@@ -287,9 +306,10 @@ def add_comments(request, news_title_url):
             user = User.objects.get(username=request.user)
             new_comments.user = user
             new_comments.news = news
+            # Get the current time and save it to news.time.
             new_comments.time = datetime.now().strftime('%Y-%m-%d')
             new_comments.points = 0
-
+            # Save the new model instance.
             new_comments.save()
 
     else:
@@ -469,15 +489,18 @@ def search(request):
     return render(request, 'search.html', {'result_list': result_list})
 
 @login_required
-def like_new(request):
-    cat_list = []
-    starts_with = ''
+def likes_news(request):
     if request.method == 'GET':
         cat_id = request.GET['new_id']
 
     likes = 0
     if cat_id:
         news = News.objects.get(id=int(cat_id))
+        # Get the current user
+        u = User.objects.get(username=request.user)
+        # Save liked news to the database.
+        like_news = LikeNews(user=u, news=news.title)
+        like_news.save()
         if news:
             likes = news.likes + 1
             news.likes = likes
@@ -486,15 +509,18 @@ def like_new(request):
     return HttpResponse(likes)
 
 @login_required
-def dislike_new(request):
-    cat_list = []
-    starts_with = ''
+def dislikes_news(request):
     if request.method == 'GET':
         cat_id = request.GET['new_id']
 
-    likes = 0
+    dislikes = 0
     if cat_id:
         news = News.objects.get(id=int(cat_id))
+        # Get the current user
+        u = User.objects.get(username=request.user)
+        # Save disliked news to the database.
+        dislike_news = DislikeNews(user=u, news=news.title)
+        dislike_news.save()
         if news:
             dislikes = news.dislikes + 1
             news.dislikes = dislikes

@@ -3,9 +3,16 @@
 {% block title %}{{ block.super }} - comments{% endblock %}
 
 {% block main_col %}
+    
+    {% load endless %}
+    {% paginate comments %}
     {% for comment in comments %}
-        <li>{{ comment.content }}-{{ comment.points }}points-{{ comment.time }}<a href="/share/user/{{ comment.user }}">{{ comment.user }}</a></li>
+    <div class="row">
+        {{ comment.content }}-{{ comment.points }}points-{{ comment.time }}<a href="/share/user/{{ comment.user }}">{{ comment.user }}</a>
+    </div>
     {% endfor %}
+
+    {% show_pages %}
     {% if user.is_authenticated %}
     <form id="news_form" method="post" action="/share/add_comments/{{ news_title_url }}/">
     {% csrf_token %}

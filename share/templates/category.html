@@ -35,10 +35,16 @@
                     ({{ new.views }} view){{ new.time }}
                 {% endif %}
                 <h5>
-                <b id="like-new-count">{{ new.likes }}</b>
-                    <button id ="likes-new" data-catid="{{ new.id }}" class="glyphicon glyphicon-thumbs-up" type="button"></button>likes
-                <b id="dislike-new-count">{{ new.dislikes }}</b>
-                    <button id ="dislikes-new" data-catid="{{ new.id }}" class="glyphicon glyphicon-thumbs-down" type="button"></button>dislikes
+                <b id="likes-news-count">{{ new.likes }}</b>
+                {% if not new.like %}
+                    <button id ="likes-news" data-catid="{{ new.id }}" class="glyphicon glyphicon-thumbs-up" type="button"></button>
+                {% endif %}
+                likes
+                <b id="dislikes-news-count">{{ new.dislikes }}</b>
+                {% if not new.dislike %}
+                    <button id ="dislikes-news" data-catid="{{ new.id }}" class="glyphicon glyphicon-thumbs-down" type="button"></button>
+                {% endif %}
+                dislikes
                 {% if new.comments %}
                     <a href="/share/add_comments/{{ new.url }}">{{ new.comments }} comments</a>
                 {% else %}
@@ -97,7 +103,6 @@
             </div>
         </form>
     </div>
-    
     <div class="container-fluid">
         {% if result_list %}
             {% load endless %}
