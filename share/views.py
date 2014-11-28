@@ -17,10 +17,10 @@ def encode_url(str):
 def decode_url(str):
     return str.replace('_', ' ')
 
-def get_news_list(max_results=0, starts_with=''):
+def get_news_list(max_results=0, query=''):
     news_list = []
-    if starts_with:
-        news_list = News.objects.filter(title__startswith=starts_with)
+    if query:
+        news_list = News.objects.filter(title__icontains=query)
     else:
         news_list = News.objects.all()
 
@@ -94,7 +94,7 @@ def category(request, category_name_url):
         context_dict['category'] = category
         # Retrieve all of the associated News.
         # Note that filter returns >= 1 model instance.
-        news_list = News.objects.filter(category=category).order_by('-views')
+        news_list = News.objects.filter(category=category).order_by('-likes')
         
         u = User.objects.get(username=request.user)
         like_list = LikeNews.objects.filter(user=u)
@@ -362,7 +362,6 @@ def profile(request):
 @login_required
 def like_category(request):
     cat_list = []
-    starts_with = ''
     if request.method == 'GET':
         cat_id = request.GET['category_id']
 
@@ -546,18 +545,18 @@ def track_url(request):
 
 def suggest_news(request):
     cat_list = []
-    starts_with = ''
+    query = ''
     if request.method == 'GET':
-        starts_with = request.GET['suggestion']
+        query = request.GET['suggestion']
     else:
-        starts_with = request.POST['suggestion']
+        query = request.POST['suggestion']
 
-    news_list = get_news_list(8, starts_with)
+    news_list = get_news_list(8, query)
 
     return render(request, 'news_list.html', {'news_list': news_list})
 
 @login_required
-def auto_add_new(request):
+def auto_add_news(request):
     cat_id = None
     url = None
     title = None
@@ -567,12 +566,14 @@ def auto_add_new(request):
         url = request.GET['url']
         title = request.GET['title']
         if cat_id:
+            u = User.objects.get(username=request.user)
             category = Category.objects.get(id=int(cat_id))
-            p = New.objects.get_or_create(category=category, title=title, url=url)
+            time = datetime.now().strftime('%Y-%m-%d')
+            news = News.objects.get_or_create(category=category, author=u, title=title, url=url, time=time)
 
-            News = New.objects.filter(category=category).order_by('-views')
+            news_list = News.objects.filter(category=category).order_by('-views')
             
-            # Adds our results list to the template context under name News.
-            context_dict['News'] = News
+            # Adds our results list to the template context under name news_list.
+            context_dict['news_list'] = news_list
 
-    return render(request, 'New_list.html', context_dict)
+    return render(request, 'news_list.html', context_dict)

@@ -35,14 +35,14 @@
                     ({{ new.views }} view){{ new.time }}
                 {% endif %}
                 <h5>
-                <b id="likes-news-count">{{ new.likes }}</b>
+                <b id="likes-{{ new.id }}">{{ new.likes }}</b>
                 {% if not new.like %}
-                    <button id ="likes-news" data-catid="{{ new.id }}" class="glyphicon glyphicon-thumbs-up" type="button"></button>
+                    <button id ="likes-news" data-catid="{{ new.id }}" class="news-like glyphicon glyphicon-thumbs-up" type="button"></button>
                 {% endif %}
                 likes
-                <b id="dislikes-news-count">{{ new.dislikes }}</b>
+                <b id="dislikes-{{ new.id }}">{{ new.dislikes }}</b>
                 {% if not new.dislike %}
-                    <button id ="dislikes-news" data-catid="{{ new.id }}" class="glyphicon glyphicon-thumbs-down" type="button"></button>
+                    <button id ="dislikes-news" data-catid="{{ new.id }}" class="news-dislike glyphicon glyphicon-thumbs-down" type="button"></button>
                 {% endif %}
                 dislikes
                 {% if new.comments %}
