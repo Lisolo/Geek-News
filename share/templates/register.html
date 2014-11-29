@@ -30,6 +30,10 @@
                     <h5 class="text-danger">{{ field.errors }}</h5>
                 </div>
             {% endfor %}
+            {% for field in captcha_form %}
+                {{ field.help_text }}
+                {{ field }}
+            {% endfor %}
             <div calss="form-group">
                 <button class="btn btn-success" type="submit">Register</button>
             </div>

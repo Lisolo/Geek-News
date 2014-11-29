@@ -4,4 +4,5 @@ from django.contrib import admin
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^share/', include('share.urls')),
+    url(r'^captcha/', include('captcha.urls')),
 )

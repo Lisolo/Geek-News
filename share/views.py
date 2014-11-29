@@ -2,7 +2,7 @@ from datetime import datetime
 
 from .models import Category, LikeCategory, News, LikeNews, DislikeNews, Comments, VoteComments, UserProfile, Book
 from .bing_search import run_query
-from .forms import CategoryForm, NewsForm, CommentsForm, UserForm, UserProfileForm
+from .forms import CategoryForm, NewsForm, CommentsForm, UserForm, UserProfileForm, CaptchaTestForm
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse
@@ -446,9 +446,10 @@ def register(request):
         # Note that we make use of both UserForm and UserProfileForm.
         user_form = UserForm(data=request.POST)
         profile_form = UserProfileForm(data=request.POST)
+        captcha_form = CaptchaTestForm(request.POST)
 
         # If the two forms are valid...
-        if user_form.is_valid() and profile_form.is_valid():
+        if user_form.is_valid() and profile_form.is_valid() and captcha_form.is_valid():
             # Save the user's form data to the database.
             user = user_form.save()
 
@@ -487,12 +488,13 @@ def register(request):
     else:
         user_form = UserForm()
         profile_form = UserProfileForm()
+        captcha_form =CaptchaTestForm()
 
     # Render the template depending on the context.
     return render(
         request, 
         'register.html', 
-        {'user_form': user_form, 'profile_form': profile_form, 'registered': registered})
+        {'user_form': user_form, 'profile_form': profile_form, 'captcha_form': captcha_form, 'registered': registered})
 
 def user_login(request):
     if request.method == 'POST':

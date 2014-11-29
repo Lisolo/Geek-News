@@ -1,4 +1,5 @@
 from django import forms
+from captcha.fields import CaptchaField
 
 from django.contrib.auth.models import User 
 
@@ -33,7 +34,10 @@ class UserProfileForm(forms.ModelForm):
     
     class Meta:
         model = UserProfile
-        fields = ('website', 'picture', 'gender',) 
+        fields = ('website', 'picture', 'gender',)
+
+class CaptchaTestForm(forms.Form):
+    captcha = CaptchaField()
 
 class CategoryForm(forms.ModelForm):
     name = forms.CharField(max_length=128, help_text="Please enter the category name.")
