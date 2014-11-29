@@ -19,12 +19,12 @@
 
     		{% for field in form.visible_fields %}
     		{{ field.help_text }}
-            <div class="col-md-3">
-    		{{ field }}
+            <div class="col-md-4">
+    		   {{ field }}
             </div>
-            <h5 class="text-danger">{{ field.errors }}</h5></br>
+               <h5 class="text-danger">{{ field.errors }}</h5>
+            </br>
     		{% endfor %}
-    		</br />
     		<button class="btn btn-info" type="submit">Create news</button>
     	</form>
     	{% endif %}

@@ -14,7 +14,7 @@
         <b id="like-category-count">{{ category.likes }}</b> people like this category
         {% if user.is_authenticated %}
             {% if not like %}
-                <button id ="likes-category" data-catid="{{category.id}}" class="glyphicon glyphicon-heart" type="button"></button>
+                <button id ="likes-category" data-catid="{{category.id}}" class="btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-heart"></span></button>
             {% endif %}
         {% endif %}
     </p>
@@ -37,18 +37,18 @@
                 <h5>
                 <b id="likes-{{ new.id }}">{{ new.likes }}</b>
                 {% if not new.like %}
-                    <button id ="likes-news" data-catid="{{ new.id }}" class="news-like glyphicon glyphicon-thumbs-up" type="button"></button>
+                    <button id ="likes-news" data-catid="{{ new.id }}" class="news-like btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
                 {% endif %}
-                likes
+                likes |
                 <b id="dislikes-{{ new.id }}">{{ new.dislikes }}</b>
                 {% if not new.dislike %}
-                    <button id ="dislikes-news" data-catid="{{ new.id }}" class="news-dislike glyphicon glyphicon-thumbs-down" type="button"></button>
+                    <button id ="dislikes-news" data-catid="{{ new.id }}" class="news-dislike btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
                 {% endif %}
                 dislikes
                 {% if new.comments %}
-                    <a href="/share/add_comments/{{ new.url }}">{{ new.comments }} comments</a>
+                    <a href="/share/{{ new.url }}/comments">{{ new.comments }} comments</a>
                 {% else %}
-                  <a href="/share/add_comments/{{ new.url }}">discuss</a>
+                  <a href="/share/{{ new.url }}/comments">discuss</a>
                 {% endif %}
                 </h5>
             </div>
@@ -64,13 +64,13 @@
                 {% endif %}
                 <h5>
                 <b id="like-new-count">{{ new.likes }}</b>
-                    likes
+                    likes |
                 <b id="dislike-new-count">{{ new.dislikes }}</b>
                     dislikes
                 {% if new.comments %}
-                    <a href="/share/add_comments/{{ new.url }}">{{ new.comments }} comments</a>
+                    <a href="/share/{{ new.url }}/comments">{{ new.comments }} comments</a>
                 {% else %}
-                  <a href="/share/add_comments/{{ new.url }}">discuss</a>
+                  <a href="/share/{{ new.url }}/comments">discuss</a>
                 {% endif %}
                 </h5>
             </div>

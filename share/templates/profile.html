@@ -22,20 +22,20 @@
         {% paginate news %}
 
         {% for new in news %}
-            <li><a href="{{ new.url }}">{{ new.title }}</a></li>
+            <li><a href="{{ new.url }}">{{ new.title }}</a> {{ new.views }} views {{ new.likes }} <span class="glyphicon glyphicon-thumbs-up"></span> | {{ new.dislikes }} <span class="glyphicon glyphicon-thumbs-down"></span></li>
         {% endfor %}
 
         {% show_pages %}
     {% endif %}
 
     {% if comments %}
-    <div class="row">
+    <div>
         <label>Comments</label>
         {% load endless %}
         {% paginate comments %}
 
         {% for comment in comments %}
-           <li><a href="{{ comment.news.url }}">{{ comment.news }}</a>-{{ comment.content }}{{ comment.time }}</li>
+           <li><a href="{{ comment.news.url }}">{{ comment.news }}</a>-{{ comment.content }} {{ comment.time }}</li>
         {% endfor %}
 
         {% show_pages %}

@@ -10,20 +10,30 @@ $(document).ready(function() {
 
 	$('.news-like').click(function() {
 		var catid;
-		catid = $(this).attr("data-catid");
+		newsid = $(this).attr("data-catid");
 		var me = $(this);
-		$.get('/share/likes_news/', {new_id: catid}, function(data) {
-			$('#likes-' + catid).html(data);
+		$.get('/share/likes_news/', {news_id: newsid}, function(data) {
+			$('#likes-' + newsid).html(data);
 			me.hide();
 		});
 	});
 
 	$('.news-dislike').click(function() {
 		var catid;
-		catid = $(this).attr("data-catid");
+		newsid = $(this).attr("data-catid");
 		var me = $(this);
-		$.get('/share/dislikes_news/', {new_id: catid}, function(data) {
-			$('#dislikes-' + catid).html(data);
+		$.get('/share/dislikes_news/', {news_id: newsid}, function(data) {
+			$('#dislikes-' + newsid).html(data);
+			me.hide();
+		});
+	});
+
+	$('.vote-up').click(function() {
+		var catid;
+		commentid = $(this).attr("data-catid");
+		var me = $(this);
+		$.get('/share/vote_comment/', {comment_id: commentid}, function(data) {
+			$('#vote-' + commentid).html(data);
 			me.hide();
 		});
 	});

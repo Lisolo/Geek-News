@@ -15,13 +15,11 @@
 
 <div class="row-fluid">
     <div class="col-md-6">
-        <h2>Top Five Categories</h2>
+        <h2>Top Categories</h2>
         {% if categories %}
-        <ul>
             {% for category in categories %}
-            <li><a href="/share/category/{{ category.url }}">{{ category.name }}</a></li>
+            <li><h4><a href="/share/category/{{ category.url }}">{{ category.name }}</a></h4></li>
             {% endfor %}
-        </ul>
         {% else %}
         <strong>No categories at present.</strong>
         {% endif %}
@@ -29,11 +27,9 @@
     <div class="col-md-6">
         <h2>Hot News</h2>
         {% if news %}
-        <ul>
             {% for new in news %}
-            <li><a href="{{ new.url }}">{{ new.title }}</a> - {{ new.category }} ({{ new.views }} view(s) {{ new.likes }} <span class="glyphicon glyphicon-heart"></span>)</li>
+            <li><a href="/share/goto/?new_id={{ new.id }}">{{ new.title }}</a> - {{ new.category }} ({{ new.views }} view {{ new.likes }} <span class="glyphicon glyphicon-heart"></span>)</li>
             {% endfor %}
-        </ul>
         {% else %}
         <strong>No news at present.</strong>
         {% endif %}

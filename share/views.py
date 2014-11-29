@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from .models import Category, LikeCategory, News, LikeNews, DislikeNews, Comments, UserProfile, Book
+from .models import Category, LikeCategory, News, LikeNews, DislikeNews, Comments, VoteComments, UserProfile, Book
 from .bing_search import run_query
 from .forms import CategoryForm, NewsForm, CommentsForm, UserForm, UserProfileForm
 
@@ -17,16 +17,12 @@ def encode_url(str):
 def decode_url(str):
     return str.replace('_', ' ')
 
-def get_news_list(max_results=0, query=''):
+def get_news_list(query=''):
     news_list = []
     if query:
-        news_list = News.objects.filter(title__icontains=query)
+        news_list = News.objects.filter(title__icontains=query)[:5]
     else:
-        news_list = News.objects.all()
-
-    if max_results > 0:
-        if (len(news_list) > max_results):
-            news_list = news_list[:max_results]
+        news_list = News.objects.order_by('-views')[:10]
 
     for news in news_list:
         news.url = encode_url(news.title)
@@ -45,10 +41,10 @@ def index(request):
 
     context_dict = {'categories': top_category_list}
 
-    sugg_list = get_news_list(max_results=5)
+    sugg_list = get_news_list()
     context_dict['news_list'] = sugg_list
 
-    news_list = News.objects.order_by('-views')[:15]
+    news_list = News.objects.order_by('-likes')[:15]
     context_dict['news'] = news_list
     """
     if request.session.get('last_visit'):
@@ -83,8 +79,12 @@ def category(request, category_name_url):
     # Create a context dictionary which we can pass to the template rendering engine.
     # We start by containing the name of the category passed by the user.
     context_dict = {'category_name': category_name, 'category_name_url': category_name_url}
-    sugg_list = get_news_list(max_results=5)
+    sugg_list = get_news_list()
     context_dict['news_list'] = sugg_list
+    try:
+        u = User.objects.get(username=request.user)
+    except:
+        u = None
 
     try:
         # Can we find a category with the given name?
@@ -96,7 +96,6 @@ def category(request, category_name_url):
         # Note that filter returns >= 1 model instance.
         news_list = News.objects.filter(category=category).order_by('-likes')
         
-        u = User.objects.get(username=request.user)
         like_list = LikeNews.objects.filter(user=u)
         dislike_list = DislikeNews.objects.filter(user=u)
 
@@ -109,14 +108,14 @@ def category(request, category_name_url):
             
             #determine whether user click the like button
             for x in like_list:
-                if news.title == x.news:
+                if news.title == x.content:
                     news.like = True
                     break
                 else:
                     news.like = False
             #determine whether user click the dislike button
             for x in dislike_list:
-                if news.title == x.news:
+                if news.title == x.content:
                     news.dislike = True
                     break
                 else:
@@ -153,7 +152,7 @@ def category(request, category_name_url):
 
 def get_books(request):
     context_dict = {}
-    news_list = get_news_list(max_results=5)
+    news_list = get_news_list()
     context_dict['news_list'] = news_list
 
     # Get the books belong to Python.
@@ -176,7 +175,7 @@ def get_books(request):
 
 def about(request):
     context_dict = {}
-    news_list = get_news_list(max_results=5)
+    news_list = get_news_list()
     context_dict['news_list'] = news_list
     # If the visits session varible exists, take it and use it.
     # If it doesn't, we haven't visited the site so set the count to zero.
@@ -290,13 +289,48 @@ def add_news(request, category_name_url):
 
     return render(request, 'add_news.html', context_dict)
 
-def add_comments(request, news_title_url):
+def comments(request, news_title_url):
     context_dict = {}
     news_title = decode_url(news_title_url)
     news = News.objects.get(title=news_title)
     comments = Comments.objects.filter(news=news).order_by('-points')
 
     context_dict['comments'] = comments
+
+    for comment in comments:
+        if comment.user == user:
+            for vote_comment in vote_comments:
+                if comment.id == vote_comment.commentid:
+                    comment.vote = True
+                else:
+                    comment.vote = False
+
+    context_dict['news_title_url'] = news_title_url
+    
+    return render(request, 'comments.html', context_dict)
+
+def add_comment(request, news_title_url):
+    context_dict = {}
+    news_title = decode_url(news_title_url)
+    news = News.objects.get(title=news_title)
+    comments = Comments.objects.filter(news=news).order_by('-points')
+
+    context_dict['comments'] = comments
+    
+    try:
+        user = User.objects.get(username=request.user)
+        vote_comments = VoteComments.objects.filter(user=user)
+    except:
+        user = None
+
+    for comment in comments:
+        if comment.user == user:
+            for vote_comment in vote_comments:
+                if comment.id == vote_comment.commentid:
+                    comment.vote = True
+                    break
+                else:
+                    comment.vote = False
 
     if request.method == 'POST':
         comments_form = CommentsForm(data=request.POST)
@@ -319,6 +353,26 @@ def add_comments(request, news_title_url):
     context_dict['news_title_url'] = news_title_url
     
     return render(request, 'comments.html', context_dict)
+
+@login_required
+def vote_comment(request):
+    if request.method == 'GET':
+        comment_id = request.GET['comment_id']
+
+    likes = 0
+    if comment_id:
+        comment = Comments.objects.get(id=int(comment_id))
+        # Get the current user
+        u = User.objects.get(username=request.user)
+        # Save liked news to the database.
+        vote_comment = VoteComments(user=u, comment=comment, commentid=comment.id)
+        vote_comment.save()
+        if comment:
+            points = comment.points + 1
+            comment.points = points
+            comment.save()
+            
+    return HttpResponse(points)
 
 @login_required
 def restricted(request):
@@ -490,15 +544,15 @@ def search(request):
 @login_required
 def likes_news(request):
     if request.method == 'GET':
-        cat_id = request.GET['new_id']
+        news_id = request.GET['news_id']
 
     likes = 0
-    if cat_id:
-        news = News.objects.get(id=int(cat_id))
+    if news_id:
+        news = News.objects.get(id=int(news_id))
         # Get the current user
         u = User.objects.get(username=request.user)
         # Save liked news to the database.
-        like_news = LikeNews(user=u, news=news.title)
+        like_news = LikeNews(user=u, news=news, content=news.title)
         like_news.save()
         if news:
             likes = news.likes + 1
@@ -510,15 +564,15 @@ def likes_news(request):
 @login_required
 def dislikes_news(request):
     if request.method == 'GET':
-        cat_id = request.GET['new_id']
+        news_id = request.GET['news_id']
 
     dislikes = 0
-    if cat_id:
-        news = News.objects.get(id=int(cat_id))
+    if news_id:
+        news = News.objects.get(id=int(news_id))
         # Get the current user
         u = User.objects.get(username=request.user)
         # Save disliked news to the database.
-        dislike_news = DislikeNews(user=u, news=news.title)
+        dislike_news = DislikeNews(user=u, news=news, content=news.title)
         dislike_news.save()
         if news:
             dislikes = news.dislikes + 1
@@ -551,7 +605,7 @@ def suggest_news(request):
     else:
         query = request.POST['suggestion']
 
-    news_list = get_news_list(8, query)
+    news_list = get_news_list(query)
 
     return render(request, 'news_list.html', {'news_list': news_list})
 

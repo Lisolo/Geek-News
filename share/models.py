@@ -60,17 +60,19 @@ class News(models.Model):
 
 class LikeNews(models.Model):
     user = models.ForeignKey(User)
-    news = models.CharField(max_length=128)
+    news = models.ForeignKey(News)
+    content = models.CharField(max_length=128)
 
     def __str__(self):
-        return self.user.username + '-' + self.news
+        return self.user.username + '-' + self.news.title
 
 class DislikeNews(models.Model):
     user = models.ForeignKey(User)
-    news = models.CharField(max_length=128)
+    news = models.ForeignKey(News)
+    content = models.CharField(max_length=128)
 
     def __str__(self):
-        return self.user.username + '-' + self.news  
+        return self.user.username + '-' + self.news.title  
 
 class Comments(models.Model):
     user = models.ForeignKey(User)
@@ -81,3 +83,11 @@ class Comments(models.Model):
 
     def __str__(self):
         return self.content
+
+class VoteComments(models.Model):
+    user = models.ForeignKey(User)
+    comment = models.ForeignKey(Comments)
+    commentid = models.IntegerField()
+
+    def __str__(self):
+        return self.user.username + '-' + self.comment.content

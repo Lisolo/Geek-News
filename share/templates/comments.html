@@ -3,28 +3,43 @@
 {% block title %}{{ block.super }} - comments{% endblock %}
 
 {% block main_col %}
-    
-    {% load endless %}
-    {% paginate comments %}
-    {% for comment in comments %}
-    <div class="row">
-        {{ comment.content }}-{{ comment.points }}points-{{ comment.time }}<a href="/share/user/{{ comment.user }}">{{ comment.user }}</a>
-    </div>
-    {% endfor %}
-
-    {% show_pages %}
     {% if user.is_authenticated %}
-    <form id="news_form" method="post" action="/share/add_comments/{{ news_title_url }}/">
-    {% csrf_token %}
-    {% for field in form.visible_fields %}
-    	{{ field.help_text }}
-    	{{ field }}
-    	<p></p>
-    	<p></p>
-    	<div class="row clearfix">
-    	    <button class="btn btn-info" type="submit">Add comment</button>
-    	</div>
-    {% endfor %}
-    </form>
+        {% load endless %}
+        {% paginate comments %}
+        {% for comment in comments %}
+            <div class="row">
+                {{ comment.content }}-
+                <b id="vote-{{ comment.id }}">{{ comment.points }}</b>
+                {% if not comment.vote %} 
+                <button id ="vote-up" data-catid="{{ comment.id }}" class="vote-up btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>
+                {% endif %}
+                 points {{ comment.time }} <a href="/share/user/{{ comment.user }}">{{ comment.user }}</a>
+            </div>
+        {% endfor %}
+
+        {% show_pages %}
+        <form id="news_form" method="post" action="/share/add_comment/{{ news_title_url }}/">
+        {% csrf_token %}
+        {% for field in form.visible_fields %}
+    	    {{ field.help_text }}
+    	    {{ field }}
+            <h5 class="text-danger">{{ field.errors }}</h5>
+    	    <p></p>
+    	    <p></p>
+    	    <div class="row clearfix">
+    	        <button class="btn btn-info" type="submit">Add comment</button>
+    	    </div>
+        {% endfor %}
+        </form>
+    
+    {% else %}
+    {% paginate comments %}
+        {% for comment in comments %}
+            <div class="row">
+                {{ comment.content }}-{{ comment.points }} points {{ comment.time }} <a href="/share/user/{{ comment.user }}">{{ comment.user }}</a>
+            </div>
+        {% endfor %}
+
+        {% show_pages %}
     {% endif %}
 {% endblock %}
