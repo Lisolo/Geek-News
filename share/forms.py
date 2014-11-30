@@ -38,6 +38,7 @@ class UserProfileForm(forms.ModelForm):
 
 class CaptchaTestForm(forms.Form):
     captcha = CaptchaField()
+    captcha.widget.attrs['class'] = 'input-sm form-control'
 
 class CategoryForm(forms.ModelForm):
     name = forms.CharField(max_length=128, help_text="Please enter the category name.")

@@ -108,14 +108,14 @@ def category(request, category_name_url):
             
             #determine whether user click the like button
             for x in like_list:
-                if news.title == x.content:
+                if news == x.news:
                     news.like = True
                     break
                 else:
                     news.like = False
             #determine whether user click the dislike button
             for x in dislike_list:
-                if news.title == x.content:
+                if news == x.news:
                     news.dislike = True
                     break
                 else:
@@ -326,7 +326,7 @@ def add_comment(request, news_title_url):
     for comment in comments:
         if comment.user == user:
             for vote_comment in vote_comments:
-                if comment.id == vote_comment.commentid:
+                if comment == vote_comment.comment:
                     comment.vote = True
                     break
                 else:
@@ -365,7 +365,7 @@ def vote_comment(request):
         # Get the current user
         u = User.objects.get(username=request.user)
         # Save liked news to the database.
-        vote_comment = VoteComments(user=u, comment=comment, commentid=comment.id)
+        vote_comment = VoteComments(user=u, comment=comment)
         vote_comment.save()
         if comment:
             points = comment.points + 1
@@ -554,7 +554,7 @@ def likes_news(request):
         # Get the current user
         u = User.objects.get(username=request.user)
         # Save liked news to the database.
-        like_news = LikeNews(user=u, news=news, content=news.title)
+        like_news = LikeNews(user=u, news=news)
         like_news.save()
         if news:
             likes = news.likes + 1
@@ -574,7 +574,7 @@ def dislikes_news(request):
         # Get the current user
         u = User.objects.get(username=request.user)
         # Save disliked news to the database.
-        dislike_news = DislikeNews(user=u, news=news, content=news.title)
+        dislike_news = DislikeNews(user=u, news=news)
         dislike_news.save()
         if news:
             dislikes = news.dislikes + 1

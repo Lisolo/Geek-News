@@ -3,18 +3,16 @@
 {% block title %}{{ block.super }} - Register{% endblock %}
 
 {% block main_col %}
-<div class="col-md-8">
+<div class="col-md-6">
     <div class="jumbotron">
         {% if registered %}
         <p>Thank you for registering.</p>
 
         <h5><a href="/share/login">Login</a>when you are ready to share.</h5>
         {% else %}
-        <h4>Register with Startup News</h4>
+        <h2 class="form-signin-heading">Sign Up Here</h2>
         <form class="form-signin span8" id="user_form" method="post" action="/share/register/" enctype="multipart/form-data">
             {% csrf_token %}
-            <h2 class="form-signin-heading">Sign up Here</h2>
-
             {% for field in user_form.visible_fields %}
                 <div calss="form-group">
                     {{ field.help_text }}

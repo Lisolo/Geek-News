@@ -3,11 +3,11 @@
 {% block title %}{{ block.super }} - Login to share{% endblock %}
 
 {% block main_col %}
-<div class="col-md-9 column">
+<div class="col-md-6">
     <div class="jumbotron">
-        <h2>Login to share</h2>
+        <h3>Login to share</h3>
         <form class="form-signin span4" id="login_form" method="post" action="/share/login/">
-            <h2 class="form-signin-heading">Please sign in</h2>
+            <h3 class="form-signin-heading">Please sign in</h3>
             {% if bad_details %}
             <p><strong>Your username and/or password were incorrect!</strong></p>
             {% elif disabled_account %}
