@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     url(r'^suggest_news/$', 'share.views.suggest_news', name='suggest_category'),
     url(r'^category/(?P<category_name_url>\w+)/$', 'share.views.category', name='category'),
     url(r'^user/(?P<author>\w+)/$', 'share.views.user_profile', name='user_profile'),
-    url(r'^(?P<news_title_url>\w+)/comments/$', 'share.views.add_comment', name='add_comment'),
+    url(r'^news/(?P<news_id>\w+)/comments/$', 'share.views.add_comment', name='add_comment'),
     url(r'^add_comment/(?P<news_title_url>\w+)/$', 'share.views.add_comment', name='add_comment'),
     url(r'^category/(?P<category_name_url>\w+)/add_news/$', 'share.views.add_news', name='add_new'),
 )

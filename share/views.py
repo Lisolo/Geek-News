@@ -94,7 +94,7 @@ def category(request, category_name_url):
         context_dict['category'] = category
         # Retrieve all of the associated News.
         # Note that filter returns >= 1 model instance.
-        news_list = News.objects.filter(category=category).order_by('-likes')
+        news_list = News.objects.filter(category=category).order_by('-rank')
         
         like_list = LikeNews.objects.filter(user=u)
         dislike_list = DislikeNews.objects.filter(user=u)
@@ -314,10 +314,9 @@ def comments(request, news_title_url):
     
     return render(request, 'comments.html', context_dict)
 
-def add_comment(request, news_title_url):
+def add_comment(request, news_id):
     context_dict = {}
-    news_title = decode_url(news_title_url)
-    news = News.objects.get(title=news_title)
+    news = News.objects.get(id=news_id)
     comments = Comments.objects.filter(news=news).order_by('-points')
 
     context_dict['comments'] = comments
@@ -354,7 +353,7 @@ def add_comment(request, news_title_url):
         comments_form = CommentsForm()
 
     context_dict['form'] = comments_form
-    context_dict['news_title_url'] = news_title_url
+    context_dict['news_id'] = news_id
     
     return render(request, 'comments.html', context_dict)
 

@@ -54,6 +54,7 @@ class News(models.Model):
     likes = models.IntegerField(default=0)
     dislikes = models.IntegerField(default=0)
     time = models.DateField()
+    rank = models.DecimalField(default=0, max_digits=3, decimal_places=2)
 
     def __str__(self):
         return self.title

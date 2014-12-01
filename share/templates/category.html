@@ -46,9 +46,9 @@
                 {% endif %}
                 dislikes
                 {% if new.comments %}
-                    <a href="/share/{{ new.url }}/comments">{{ new.comments }} comments</a>
+                    <a href="/share/news/{{ new.id }}/comments">{{ new.comments }} comments</a>
                 {% else %}
-                  <a href="/share/{{ new.url }}/comments">discuss</a>
+                  <a href="/share/news/{{ new.id }}/comments">discuss</a>
                 {% endif %}
                 </h5>
             </div>
@@ -68,9 +68,9 @@
                 <b id="dislike-new-count">{{ new.dislikes }}</b>
                     dislikes
                 {% if new.comments %}
-                    <a href="/share/{{ new.url }}/comments">{{ new.comments }} comments</a>
+                    <a href="/share/news/{{ new.id }}/comments">{{ new.comments }} comments</a>
                 {% else %}
-                  <a href="/share/{{ new.url }}/comments">discuss</a>
+                  <a href="/share/news/{{ new.id }}/comments">discuss</a>
                 {% endif %}
                 </h5>
             </div>
