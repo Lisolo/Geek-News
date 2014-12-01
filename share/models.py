@@ -76,7 +76,7 @@ class Comments(models.Model):
     user = models.ForeignKey(User)
     news = models.ForeignKey(News)
     content = models.TextField()
-    time = models.DateField()
+    time = models.DateTimeField()
     points = models.IntegerField(default=0)
 
     def __str__(self):

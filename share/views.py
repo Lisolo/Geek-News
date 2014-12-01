@@ -106,6 +106,11 @@ def category(request, category_name_url):
             except:
                 news.comments = None
             
+            if news.author == u:
+                news.like = True
+                news.dislike = True
+                continue
+    
             #determine whether user click the like button
             for x in like_list:
                 if news == x.news:
@@ -341,8 +346,7 @@ def add_comment(request, news_title_url):
             new_comments.user = user
             new_comments.news = news
             # Get the current time and save it to news.time.
-            new_comments.time = datetime.now().strftime('%Y-%m-%d')
-            new_comments.points = 0
+            new_comments.time = datetime.now().strftime('%Y-%m-%d %H:%M')
             # Save the new model instance.
             new_comments.save()
 
@@ -357,16 +361,17 @@ def add_comment(request, news_title_url):
 @login_required
 def vote_comment(request):
     if request.method == 'GET':
-        comment_id = request.GET['comment_id']
+        comment_id = int(request.GET['comment_id'])
 
     likes = 0
     if comment_id:
-        comment = Comments.objects.get(id=int(comment_id))
         # Get the current user
         u = User.objects.get(username=request.user)
         # Save liked news to the database.
-        vote_comment = VoteComments(user=u, comment=comment)
+        vote_comment = VoteComments(user=u, comment_id=comment_id)
         vote_comment.save()
+
+        comment = Comments.objects.get(id=comment_id)
         if comment:
             points = comment.points + 1
             comment.points = points
