@@ -7,7 +7,6 @@
     <div class="jumbotron">
         {% if registered %}
         <p>Thank you for registering.</p>
-
         <h5><a href="/share/login">Login</a>when you are ready to share.</h5>
         {% else %}
         <h2 class="form-signin-heading">Sign Up Here</h2>
@@ -20,7 +19,6 @@
                     <h5 class="text-danger">{{ field.errors }}</h5>
                 </div>
             {% endfor %}
-
             {% for field in profile_form.visible_fields %}
                 <div calss="form-group">
                     {{ field.help_text }}
@@ -31,6 +29,7 @@
             {% for field in captcha_form %}
                 {{ field.help_text }}
                 {{ field }}
+                <h5 class="text-danger">{{ field.errors }}</h5>
             {% endfor %}
             <div calss="form-group">
                 <button class="btn btn-success" type="submit">Register</button>

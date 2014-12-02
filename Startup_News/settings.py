@@ -43,6 +43,16 @@ MEDIA_URL = '/media/'
 
 STATIC_URL = '/static/'
 
+# Email 
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'iamsoloa@163.com'
+SERVER_EMAIL = 'iamsoloa@163.com'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'iamsoloa@163.com'
+EMAIL_HOST_PASSWORD = '552753000'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 # Application definition
 
 INSTALLED_APPS = (

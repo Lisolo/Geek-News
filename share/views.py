@@ -2,14 +2,25 @@ from datetime import datetime
 
 from .models import Category, LikeCategory, News, LikeNews, DislikeNews, Comments, VoteComments, UserProfile, Book
 from .bing_search import run_query
-from .forms import CategoryForm, NewsForm, CommentsForm, UserForm, UserProfileForm, CaptchaTestForm
+from .forms import CategoryForm, NewsForm, CommentsForm, UserForm, UserProfileForm, CaptchaTestForm, reset_form
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template import loader
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
+from Startup_News.settings import DEFAULT_FROM_EMAIL
 
+from django.views.generic import *
+from .forms import PasswordResetRequestForm
+from django.contrib import messages
 
 def encode_url(str):
     return str.replace(' ', '_')
@@ -194,9 +205,12 @@ def about(request):
 
 def user_profile(request, author):
     context_dict = {}
-    u = User.objects.get(username=author)
+    user = User.objects.get(username=author)
+    current_user = User.objects.get(username=request.user)
+    if user == current_user:
+        context_dict['reset'] = True
     try:
-        up = UserProfile.objects.get(user=u)
+        up = UserProfile.objects.get(user=user)
     except:
         up = None
 
@@ -209,8 +223,8 @@ def user_profile(request, author):
         comments = Comments.objects.filter(user=u)
     except:
         comments = None
-
-    context_dict['another_user'] = u
+    
+    context_dict['another_user'] = user
     context_dict['user_profile'] = up
     context_dict['news'] = news_list
     context_dict['comments'] = comments
@@ -394,6 +408,7 @@ def user_logout(request):
 def profile(request):
     context_dict = {}
     u = User.objects.get(username=request.user)
+    context_dict['reset'] = True
 
     try:
         up = UserProfile.objects.get(user=u)
@@ -492,13 +507,14 @@ def register(request):
     else:
         user_form = UserForm()
         profile_form = UserProfileForm()
-        captcha_form =CaptchaTestForm()
+        captcha_form = CaptchaTestForm()
 
     # Render the template depending on the context.
     return render(
         request, 
         'register.html', 
-        {'user_form': user_form, 'profile_form': profile_form, 'captcha_form': captcha_form, 'registered': registered})
+        {'user_form': user_form, 'profile_form': profile_form, 
+        'captcha_form': captcha_form, 'registered': registered})
 
 def user_login(request):
     if request.method == 'POST':
@@ -637,3 +653,120 @@ def auto_add_news(request):
             context_dict['news_list'] = news_list
 
     return render(request, 'news_list.html', context_dict)
+
+def reset_password(request):
+    context_dict = {}
+    if request.method == 'POST':
+        form = reset_form(request.POST)
+        if form.is_valid():
+            new_password = form.cleaned_data['newpassword1']
+            print(new_password)
+            username = request.user.username
+            password = form.cleaned_data['oldpassword']
+            print(password)
+
+            user = authenticate(username=username, password=password)
+            if user == request.user:
+                user.set_password(new_password)
+                user.save()
+                return render(request, 'reset_password.html', {'reseted': True})
+
+            else:
+                return render(request, 'reset_password.html', 
+                    {'error':'You have entered wrong old password','form': form})
+
+        else:
+            return render(request, 'reset_password.html', 
+                {'error':'You have entered old password','form': form})
+    else:
+        form = reset_form()
+    context_dict['form'] = form 
+    return render(request, 'reset_password.html', context_dict)
+
+class ResetPasswordRequestView(FormView):
+    template_name = "registration/password_reset_email.html"    #code for template is given below the view's code
+    success_url = '/share/login'
+    form_class = PasswordResetRequestForm
+
+    @staticmethod
+    def validate_email_address(email):
+    # This method here validates the if the input is an email address or not. 
+    # Its return type is boolean, True if the input is a email address or False if its not.
+        try:
+            validate_email(email)
+            return True
+        except ValidationError:
+            return False
+
+    def post(self, request, *args, **kwargs):
+    # A normal post request which takes input from field "email_or_username" (in ResetPasswordRequestForm). 
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            data= form.cleaned_data["email_or_username"]
+
+        
+        if self.validate_email_address(data) is True:                 #uses the method written above
+            associated_users= User.objects.filter(email= data)
+            # If the input is an valid email address, 
+            # then the following code will lookup for users associated with that email address. 
+            # If found then an email will be sent to the address, 
+            # else an error message will be printed on the screen.
+            if associated_users.exists():
+                for user in associated_users:
+                        c = {
+                            'email': user.email,
+                            'domain': request.META['HTTP_HOST'],
+                            'site_name': 'your site',
+                            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                            'user': user.username,
+                            'token': default_token_generator.make_token(user),
+                            'protocol': 'http',
+                            }
+                        subject_template_name='registration/password_reset_subject.txt' 
+                        # copied from django/contrib/admin/templates/registration/password_reset_subject.txt to templates directory
+                        email_template_name='registration/password_reset_email.html'    
+                        # copied from django/contrib/admin/templates/registration/password_reset_email.html to templates directory
+                        subject = loader.render_to_string(subject_template_name, c)
+                        # Email subject *must not* contain newlines
+                        subject = ''.join(subject.splitlines())
+                        email = loader.render_to_string(email_template_name, c)
+                        send_mail(subject, email, DEFAULT_FROM_EMAIL , [user.email], fail_silently=False)
+                result = self.form_valid(form)
+                messages.success(request, 'An email has been sent to ' + data +
+                        ". Please check its inbox to continue reseting password.")
+                return result
+            result = self.form_invalid(form)
+            messages.error(request, 'No user is associated with this email address')
+            return result
+        else:
+            
+            # If the input is an username, then the following code will lookup for users associated with that user. 
+            # If found then an email will be sent to the user's address, else an error message will be printed on the screen.
+            associated_users= User.objects.filter(username=data)
+            if associated_users.exists():
+                for user in associated_users:
+                    c = {
+                        'email': user.email,
+                        'domain': 'myjita.info',
+                        'site_name': 'myjita',
+                        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                        'user': user,
+                        'token': default_token_generator.make_token(user),
+                        'protocol': 'http',
+                        }
+                    subject_template_name='registration/password_reset_subject.txt'
+                    email_template_name='registration/password_reset_email.html'
+                    subject = loader.render_to_string(subject_template_name, c)
+                    # Email subject *must not* contain newlines
+                    subject = ''.join(subject.splitlines())
+                    email = loader.render_to_string(email_template_name, c)
+                    send_mail(subject, email, DEFAULT_FROM_EMAIL , [user.email], fail_silently=False)
+                result = self.form_valid(form)
+                messages.success(request, 'Email has been sent to ' + data +
+                    "'s email address. Please check its inbox to continue reseting password.")
+                return result
+            result = self.form_invalid(form)
+            messages.error(request, 'This username does not exist in the system.')
+            return result
+        messages.error(request, 'Invalid Input')
+        return self.form_invalid(form)

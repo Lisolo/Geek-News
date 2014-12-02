@@ -6,14 +6,13 @@
 <div class="col-md-6">
     <div class="jumbotron">
         <h3>Login to share</h3>
-        <form class="form-signin span4" id="login_form" method="post" action="/share/login/">
-            <h3 class="form-signin-heading">Please sign in</h3>
-            {% if bad_details %}
+        <h3>Please sign in</h3>
+        {% if bad_details %}
             <p><strong>Your username and/or password were incorrect!</strong></p>
             {% elif disabled_account %}
             <p><strong>Your startup news account is currently disables; we can't log you in!</strong></p>
-            {% endif %}
-
+        {% endif %}
+        <form class="form-signin span4" id="login_form" method="post" action="/share/login/">
             {% csrf_token %}
             <div class="form-group">
                 <label>Username:</label> 
@@ -22,7 +21,7 @@
             </div>
             <div calss="form-group">
                 <label>
-                    Password <a href="/share/password_reset">(forgot password)</a>
+                    Password <a href="/share/forgot_password">(forgot password)</a>
                 </label>
                 <input type="password" class="form-control" placeholder="Password" name="password"/>
                 <h5 class="text-danger">{{ password_error }}</h5>

@@ -18,7 +18,7 @@
         {% endfor %}
 
         {% show_pages %}
-        <form id="news_form" method="post" action="/share/add_comment/{{ news_title_url }}/">
+        <form id="news_form" method="post" action="/share/add_comment/{{ news_id }}/">
         {% csrf_token %}
         {% for field in form.visible_fields %}
     	    {{ field.help_text }}

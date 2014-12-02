@@ -14,10 +14,19 @@ class UserForm(forms.ModelForm):
 
     password = forms.CharField(widget=forms.PasswordInput(), help_text="Password")
     password.widget.attrs['class'] = 'input-sm form-control'
+    confirmPassword = forms.CharField(widget=forms.PasswordInput(), help_text="Confirm Password")
+    confirmPassword.widget.attrs['class'] = 'input-sm form-control'
+
+    def clean_confirmPassword(self):
+        if 'password' in self.cleaned_data and 'confirmPassword' in self.cleaned_data:
+            if self.cleaned_data['password'] != self.cleaned_data['confirmPassword']:
+                self.add_error('confirmPassword', 'The two password fields did not match.')
+                return self
+        return self.cleaned_data 
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password',)
+        fields = ('username', 'email', 'password')
 
 class UserProfileForm(forms.ModelForm):
     GENDER = (
@@ -87,4 +96,23 @@ class CommentsForm(forms.ModelForm):
 
     class Meta:
         model = Comments
-        fields = ('content',)   
+        fields = ('content',)  
+
+class reset_form(forms.Form):
+    oldpassword = forms.CharField(widget=forms.PasswordInput(), help_text='Password')
+    oldpassword.widget.attrs['class'] = 'input-sm form-control'
+    newpassword1 = forms.CharField(widget=forms.PasswordInput(), help_text='New password')
+    newpassword1.widget.attrs['class'] = 'input-sm form-control'
+    newpassword2 = forms.CharField(widget=forms.PasswordInput(), help_text='Confirm password')
+    newpassword2.widget.attrs['class'] = 'input-sm form-control'
+
+
+    def clean_newpassword2(self):
+        if 'newpassword1' in self.cleaned_data and 'newpassword2' in self.cleaned_data:
+            if self.cleaned_data['newpassword1'] != self.cleaned_data['newpassword2']:
+                self.add_error('newpassword2', 'The two password fields did not match.')
+                return self
+        return self.cleaned_data
+
+class PasswordResetRequestForm(forms.Form):
+    email_or_username = forms.CharField(label=("Email Or Username"), max_length=254) 
