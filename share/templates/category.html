@@ -14,7 +14,7 @@
         <b id="like-category-count">{{ category.likes }}</b> people like this category
         {% if user.is_authenticated %}
             {% if not like %}
-                <button id ="likes-category" data-catid="{{category.id}}" class="btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-heart"></span></button>
+                <button id ="likes-category" data-catid="{{ category.id }}" class="btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-heart"></span></button>
             {% endif %}
         {% endif %}
     </p>

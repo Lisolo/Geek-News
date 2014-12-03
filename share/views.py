@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from .models import Category, LikeCategory, News, LikeNews, DislikeNews, Comments, VoteComments, UserProfile, Book
+from .models import Category, LikeCategory, News, LikeNews, DislikeNews, Comments, VoteComments, UserProfile, Book, LikeBook
 from .bing_search import run_query
 from .forms import CategoryForm, NewsForm, CommentsForm, UserForm, UserProfileForm, CaptchaTestForm, reset_form
 
@@ -170,15 +170,26 @@ def get_books(request):
     context_dict = {}
     news_list = get_news_list()
     context_dict['news_list'] = news_list
+    try:
+        u = User.objects.get(username=request.user)
+    except:
+        u = None
+        
+    like_list = LikeBook.objects.filter(user=u)
 
     # Get the books belong to Python.
     try:
         category = Category.objects.get(name='Python')
         python_books = Book.objects.filter(category=category)
-        context_dict['python_books'] = python_books
     except:
         context_dict['python_books'] = None
 
+    for book in python_books:
+        for x in like_list:
+            if book == x.book:
+                book.like = True
+                continue
+    
     # Get the books belong to Java.
     try:
         category = Category.objects.get(name='Java')
@@ -187,6 +198,7 @@ def get_books(request):
     except:
         context_dict['java_books'] = None
 
+    context_dict['python_books'] = python_books
     return render(request, 'books.html', context_dict)
 
 def about(request):
@@ -566,16 +578,15 @@ def search(request):
 
 @login_required
 def likes_news(request):
-    if request.method == 'GET':
-        news_id = request.GET['news_id']
+    news_id = request.GET['news_id']
 
     likes = 0
     if news_id:
         news = News.objects.get(id=int(news_id))
         # Get the current user
-        u = User.objects.get(username=request.user)
+        user = User.objects.get(username=request.user)
         # Save liked news to the database.
-        like_news = LikeNews(user=u, news=news)
+        like_news = LikeNews(user=user, news=news)
         like_news.save()
         if news:
             likes = news.likes + 1
@@ -586,16 +597,15 @@ def likes_news(request):
 
 @login_required
 def dislikes_news(request):
-    if request.method == 'GET':
-        news_id = request.GET['news_id']
+    news_id = request.GET['news_id']
 
     dislikes = 0
     if news_id:
         news = News.objects.get(id=int(news_id))
         # Get the current user
-        u = User.objects.get(username=request.user)
+        user = User.objects.get(username=request.user)
         # Save disliked news to the database.
-        dislike_news = DislikeNews(user=u, news=news)
+        dislike_news = DislikeNews(user=user, news=news)
         dislike_news.save()
         if news:
             dislikes = news.dislikes + 1
@@ -603,6 +613,23 @@ def dislikes_news(request):
             news.save()
             
     return HttpResponse(dislikes)
+
+@login_required
+def likes_book(request):
+    book_id = request.GET['book_id']
+
+    likes = 0
+    if book_id:
+        book = Book.objects.get(id=int(book_id))
+        u = User.objects.get(username=request.user)
+        like_book = LikeBook(user=u, book=book)
+        like_book.save()
+        if book:
+            likes = book.likes + 1
+            book.likes = likes
+            book.save()
+
+    return HttpResponse(likes)
 
 def track_url(request):
     new_id = None

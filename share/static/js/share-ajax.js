@@ -9,7 +9,7 @@ $(document).ready(function() {
 	});
 
 	$('.news-like').click(function() {
-		var catid;
+		var newsid;
 		newsid = $(this).attr("data-catid");
 		var me = $(this);
 		$.get('/share/likes_news/', {news_id: newsid}, function(data) {
@@ -19,7 +19,7 @@ $(document).ready(function() {
 	});
 
 	$('.news-dislike').click(function() {
-		var catid;
+		var cnews;
 		newsid = $(this).attr("data-catid");
 		var me = $(this);
 		$.get('/share/dislikes_news/', {news_id: newsid}, function(data) {
@@ -27,9 +27,9 @@ $(document).ready(function() {
 			me.hide();
 		});
 	});
-
+    
 	$('.vote-up').click(function() {
-		var catid;
+		var commentd;
 		commentid = $(this).attr("data-catid");
 		var me = $(this);
 		$.get('/share/vote_comment/', {comment_id: commentid}, function(data) {
@@ -38,6 +38,16 @@ $(document).ready(function() {
 		});
 	});
 	
+    $('.book-like').click(function() {
+		var bookid;
+		bookid = $(this).attr("data-catid");
+		var me = $(this);
+		$.get('/share/likes_book/', {book_id: bookid}, function(data) {
+			$('#likes-' + bookid).html(data);
+			me.hide();
+		});
+	});
+
 	$('#suggestion1').keyup(function() {
 		var query;
 		query = $(this).val();

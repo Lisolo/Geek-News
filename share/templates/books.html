@@ -9,7 +9,14 @@
 {% block main_col %}
     <h4>Python</h4>
     {% for book in python_books %}
-        <li><a href="{{ book.url }}">{{ book.name }}</a></li>
+        <div class="row">
+            <a href="{{ book.url }}">{{ book.name }}</a> {{ book.author }} - <b id="likes-{{ book.id }}"> {{ book.likes }}</b>  likes
+            {% if user.is_authenticated %}
+                {% if not book.like %}
+                    <button id ="likes-book" data-catid="{{ book.id }}" class="book-like btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-heart"></span></button>
+                {% endif %}
+            {% endif %}
+        </div>
     {% endfor %}
     </br>
     <h4>Java</h4>

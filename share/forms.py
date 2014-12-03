@@ -58,6 +58,7 @@ class CategoryForm(forms.ModelForm):
     class Meta:
         # Provide an association between the ModelForm and a model
         model = Category
+        fields = ('name', 'views', 'likes')
 
 class NewsForm(forms.ModelForm):
     title = forms.CharField(max_length=128, help_text="Please enter the title of the news.")

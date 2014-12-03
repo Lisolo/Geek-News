@@ -41,9 +41,17 @@ class Book(models.Model):
     name = models.CharField(max_length=128, unique=True)
     url = models.URLField()
     author = models.CharField(max_length=128, blank=True)
+    likes = models.IntegerField(default=0)
     
     def __str__(self):
         return self.name
+
+class LikeBook(models.Model):
+    user = models.ForeignKey(User)
+    book = models.ForeignKey(Book)
+
+    def __str__(self):
+        return self.user.username + '-' + self.book.name
 
 class News(models.Model):
     category = models.ForeignKey(Category)
