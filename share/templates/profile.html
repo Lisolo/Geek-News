@@ -6,7 +6,7 @@
 <div class="col-md-offset-3">
     <h1>Profile</h1>
     {% if reset %}
-    <h5><a href="/share/reset_password">reset password</a></h5>
+    <h5><a href="/share/reset_password">Reset password</a></h5>
     {% endif %}
     <p>Email: {{ another_user.email }}</p>
     {% if user_profile %}
@@ -24,7 +24,7 @@
         {% paginate news %}
 
         {% for new in news %}
-            <li><a href="{{ new.url }}">{{ new.title }}</a> {{ new.views }} views {{ new.likes }} <span class="glyphicon glyphicon-thumbs-up"></span> | {{ new.dislikes }} <span class="glyphicon glyphicon-thumbs-down"></span></li>
+            <li><a href="{{ new.url }}" target="_newtab">{{ new.title }}</a> {{ new.views }} views {{ new.likes }} <span class="glyphicon glyphicon-thumbs-up"></span> | {{ new.dislikes }} <span class="glyphicon glyphicon-thumbs-down"></span></li>
         {% endfor %}
 
         {% show_pages %}

@@ -331,6 +331,23 @@ def comments(request, news_title_url):
 def add_comment(request, news_id):
     context_dict = {}
     news = News.objects.get(id=news_id)
+    
+    if request.method == 'POST':
+        comments_form = CommentsForm(data=request.POST)
+        if comments_form.is_valid():
+            new_comments = comments_form.save(commit=False)
+            
+            user = User.objects.get(username=request.user)
+            new_comments.user = user
+            new_comments.news = news
+            # Get the current time and save it to news.time.
+            new_comments.time = datetime.now().strftime('%Y-%m-%d %H:%M')
+            # Save the new model instance.
+            new_comments.save()
+
+    else:
+        comments_form = CommentsForm()
+
     comments = Comments.objects.filter(news=news).order_by('-points')
 
     context_dict['comments'] = comments
@@ -349,22 +366,6 @@ def add_comment(request, news_id):
                     break
                 else:
                     comment.vote = False
-
-    if request.method == 'POST':
-        comments_form = CommentsForm(data=request.POST)
-        if comments_form.is_valid():
-            new_comments = comments_form.save(commit=False)
-            
-            user = User.objects.get(username=request.user)
-            new_comments.user = user
-            new_comments.news = news
-            # Get the current time and save it to news.time.
-            new_comments.time = datetime.now().strftime('%Y-%m-%d %H:%M')
-            # Save the new model instance.
-            new_comments.save()
-
-    else:
-        comments_form = CommentsForm()
 
     context_dict['form'] = comments_form
     context_dict['news_id'] = news_id

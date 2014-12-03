@@ -8,7 +8,7 @@
         {% paginate comments %}
         {% for comment in comments %}
             <div class="row">
-                {{ comment.content }}-
+                {{ comment.content }} -
                 <b id="vote-{{ comment.id }}">{{ comment.points }}</b>
                 {% if not comment.vote %} 
                 <button id ="vote-up" data-catid="{{ comment.id }}" class="vote-up btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>
@@ -36,7 +36,7 @@
     {% paginate comments %}
         {% for comment in comments %}
             <div class="row">
-                {{ comment.content }}-{{ comment.points }} points {{ comment.time }} <a href="/share/user/{{ comment.user }}">{{ comment.user }}</a>
+                {{ comment.content }} -{{ comment.points }} points {{ comment.time }} <a href="/share/user/{{ comment.user }}">{{ comment.user }}</a>
             </div>
         {% endfor %}
 
