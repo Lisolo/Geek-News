@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 from share.views import ResetPasswordRequestView
 urlpatterns = patterns('',
     url(r'^$', 'share.views.index', name='index'),
-    url(r'^books/$', 'share.views.get_books', name='book'),
+    url(r'books/$', 'share.views.books', name='books'),
     url(r'^about/$', 'share.views.about', name='about'),
     url(r'^search/$', 'share.views.search', name='search'),
     url(r'^login/$', 'share.views.user_login', name='login'),
@@ -24,7 +24,8 @@ urlpatterns = patterns('',
     url(r'^user/(?P<author>\w+)/$', 'share.views.user_profile', name='user_profile'),
     url(r'^news/(?P<news_id>\w+)/comments/$', 'share.views.add_comment', name='add_comment'),
     url(r'^add_comment/(?P<news_id>\w+)/$', 'share.views.add_comment', name='add_comment'),
-    url(r'^category/(?P<category_name_url>\w+)/add_news/$', 'share.views.add_news', name='add_new'),
     url(r'^reset_password/$', 'share.views.reset_password', name='change_password'),
+    url(r'^book_list/(?P<category_name_url>\w+)/$', 'share.views.get_books', name='get_books'),
     url(r'^forgot_password', ResetPasswordRequestView.as_view(), name="reset_password"),
+    url(r'^category/(?P<category_name_url>\w+)/add_news/$', 'share.views.add_news', name='add_new'),
 )

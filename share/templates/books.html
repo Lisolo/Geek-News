@@ -2,25 +2,10 @@
 
 {% block title %}{{ block.super }} - Books{% endblock %}
 
-{% block side_col %}
-    {% include 'left_sidebar.html' %}
-{% endblock %}
-
 {% block main_col %}
-    <h4>Python</h4>
-    {% for book in python_books %}
-        <div class="row">
-            <a href="{{ book.url }}">{{ book.name }}</a> {{ book.author }} - <b id="likes-{{ book.id }}"> {{ book.likes }}</b>  likes
-            {% if user.is_authenticated %}
-                {% if not book.like %}
-                    <button id ="likes-book" data-catid="{{ book.id }}" class="book-like btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-heart"></span></button>
-                {% endif %}
-            {% endif %}
-        </div>
-    {% endfor %}
-    </br>
-    <h4>Java</h4>
-    {% for book in java_books %}
-        <li><a href="{{ book.url }}">{{ book.name }}</a></li>
+    {% for category in cat_list %}
+    <div class="row">
+        <h3><a href="/share/book_list/{{ category.url }}"><span class="label label-info">{{ category.name }}</span></a></h3>
+    </div>
     {% endfor %}
 {% endblock %}

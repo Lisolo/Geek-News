@@ -166,7 +166,16 @@ def category(request, category_name_url):
     # Go render the response and return it to the client.
     return render(request, 'category.html', context_dict)
 
-def get_books(request):
+def books(request):
+    context_dict = {}
+    cat_list = Category.objects.all()
+    for category in cat_list:
+        category.url = encode_url(category.name)
+    context_dict['cat_list'] = cat_list
+    return render(request, 'books.html', context_dict)
+
+def get_books(request, category_name_url):
+    category_name = decode_url(category_name_url)
     context_dict = {}
     news_list = get_news_list()
     context_dict['news_list'] = news_list
@@ -177,29 +186,22 @@ def get_books(request):
         
     like_list = LikeBook.objects.filter(user=u)
 
-    # Get the books belong to Python.
+    # Get the books.
     try:
-        category = Category.objects.get(name='Python')
-        python_books = Book.objects.filter(category=category)
+        category = Category.objects.get(name=category_name)
+        books = Book.objects.filter(category=category)
     except:
-        context_dict['python_books'] = None
+        context_dict['books'] = None
 
-    for book in python_books:
+    for book in books:
         for x in like_list:
             if book == x.book:
                 book.like = True
                 continue
-    
-    # Get the books belong to Java.
-    try:
-        category = Category.objects.get(name='Java')
-        java_books = Book.objects.filter(category=category)
-        context_dict['java_books'] = java_books
-    except:
-        context_dict['java_books'] = None
 
-    context_dict['python_books'] = python_books
-    return render(request, 'books.html', context_dict)
+    context_dict['books'] = books
+    context_dict['category_name'] = category_name
+    return render(request, 'book_list.html', context_dict)
 
 def about(request):
     context_dict = {}
