@@ -1,4 +1,5 @@
 from datetime import datetime
+from random import choice
 
 from .models import Category, LikeCategory, News, LikeNews, DislikeNews, Comments, VoteComments, UserProfile, Book, LikeBook
 from .bing_search import run_query
@@ -93,9 +94,9 @@ def category(request, category_name_url):
     sugg_list = get_news_list()
     context_dict['news_list'] = sugg_list
     try:
-        u = User.objects.get(username=request.user)
+        user = User.objects.get(username=request.user)
     except:
-        u = None
+        user = None
 
     try:
         # Can we find a category with the given name?
@@ -106,9 +107,6 @@ def category(request, category_name_url):
         # Retrieve all of the associated News.
         # Note that filter returns >= 1 model instance.
         news_list = News.objects.filter(category=category).order_by('-rank')
-        
-        like_list = LikeNews.objects.filter(user=u)
-        dislike_list = DislikeNews.objects.filter(user=u)
 
         for news in news_list:
             news.url = encode_url(news.title)
@@ -117,30 +115,26 @@ def category(request, category_name_url):
             except:
                 news.comments = None
             
-            if news.author == u:
+            if news.author == user:
                 news.like = True
                 news.dislike = True
                 continue
     
             #determine whether user click the like button
-            for x in like_list:
-                if news == x.news:
-                    news.like = True
-                    break
-                else:
-                    news.like = False
+            try:
+                likes_news = LikeNews.objects.get(user=user, news=news)
+                news.like = True
+            except:
+                pass
             #determine whether user click the dislike button
-            for x in dislike_list:
-                if news == x.news:
-                    news.dislike = True
-                    break
-                else:
-                    news.dislike = False
+            try:
+                dislikes_news = DislikeNews.objects.get(user=user, news=news)
+                news.dislike = True
+            except:
+                pass
 
         # Adds our results list to the template context under name News.
         context_dict['news'] = news_list
-
-
 
         # We also add the category object from the database to the context dictionary.
         # We'll use this in the template to verify that the category exists.
@@ -149,7 +143,7 @@ def category(request, category_name_url):
         # Don't do anything - the template displays the "no category" message for us.
         pass
 
-    like_category = LikeCategory.objects.filter(user=u)
+    like_category = LikeCategory.objects.filter(user=user)
     for x in like_category:
         if x.category == category.name: 
             context_dict['like'] = True
@@ -168,9 +162,11 @@ def category(request, category_name_url):
 
 def books(request):
     context_dict = {}
-    cat_list = Category.objects.all()
+    color = ['default', 'primary', 'success', 'info', 'warning', 'danger']
+    cat_list = Category.objects.all().order_by('-likes')
     for category in cat_list:
         category.url = encode_url(category.name)
+        category.color = choice(color)
     context_dict['cat_list'] = cat_list
     return render(request, 'books.html', context_dict)
 
@@ -180,11 +176,9 @@ def get_books(request, category_name_url):
     news_list = get_news_list()
     context_dict['news_list'] = news_list
     try:
-        u = User.objects.get(username=request.user)
+        user = User.objects.get(username=request.user)
     except:
-        u = None
-        
-    like_list = LikeBook.objects.filter(user=u)
+        user = None
 
     # Get the books.
     try:
@@ -192,12 +186,14 @@ def get_books(request, category_name_url):
         books = Book.objects.filter(category=category)
     except:
         context_dict['books'] = None
-
+    
+    
     for book in books:
-        for x in like_list:
-            if book == x.book:
-                book.like = True
-                continue
+        try:
+            like_book = LikeBook.objects.get(user=user, book=book)
+            book.like = True
+        except:
+            pass     
 
     context_dict['books'] = books
     context_dict['category_name'] = category_name

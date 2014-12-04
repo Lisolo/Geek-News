@@ -5,7 +5,7 @@
 {% block main_col %}
     {% for category in cat_list %}
     <div class="row">
-        <h3><a href="/share/book_list/{{ category.url }}"><span class="label label-info">{{ category.name }}</span></a></h3>
+        <h3><a href="/share/book_list/{{ category.url }}"><span class="label label-{{ category.color }}">{{ category.name }}</span></a></h3>
     </div>
     {% endfor %}
 {% endblock %}
