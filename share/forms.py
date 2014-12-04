@@ -40,6 +40,7 @@ class UserProfileForm(forms.ModelForm):
     gender = forms.ChoiceField(help_text="Gender", widget=forms.RadioSelect, choices=GENDER)
 
     picture = forms.ImageField(help_text="Select a profile image to upload.", required=False)
+    picture.widget.attrs['type'] = 'file'
     
     class Meta:
         model = UserProfile

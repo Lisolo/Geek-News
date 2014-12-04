@@ -66,4 +66,23 @@ $(document).ready(function() {
 			me.hide();
 		});
 	});
+
+    // Add refresh button after field (this can be done in the template as well)
+    $('img.captcha').after(
+            $('<button class="captcha-refresh btn btn-sm"><span class="glyphicon glyphicon-refresh"></span></button>')
+            );
+
+    // Click-handler for the refresh-link
+    $('.captcha-refresh').click(function(){
+        var $form = $(this).parents('form');
+        var url = location.protocol + "//" + window.location.hostname + ":"
+                  + location.port + "/captcha/refresh/";
+
+        // Make the AJAX-call
+        $.getJSON(url, {}, function(json) {
+            $form.find('input[name="captcha_0"]').val(json.key);
+            $form.find('img.captcha').attr('src', json.image_url);
+        });
+        return false;
+    });
 });
