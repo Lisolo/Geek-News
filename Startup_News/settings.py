@@ -50,7 +50,7 @@ SERVER_EMAIL = 'iamsoloa@163.com'
 EMAIL_HOST = 'smtp.163.com'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = 'iamsoloa@163.com'
-EMAIL_HOST_PASSWORD = '552753000'
+EMAIL_HOST_PASSWORD = ''
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # Application definition
