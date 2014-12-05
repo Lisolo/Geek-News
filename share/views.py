@@ -95,61 +95,52 @@ def category(request, category_name_url):
     context_dict['news_list'] = sugg_list
     try:
         user = User.objects.get(username=request.user)
-    except:
+    except User.DoesNotExist:
         user = None
 
-    try:
-        # Can we find a category with the given name?
-        # If we can't, the .get() method raises a DoesNotExist exception.
-        # So the .get() method returns one model instance or raises an exception.
-        category = Category.objects.get(name__iexact=category_name)
-        context_dict['category'] = category
-        # Retrieve all of the associated News.
-        # Note that filter returns >= 1 model instance.
-        news_list = News.objects.filter(category=category).order_by('-rank')
+    # Can we find a category with the given name?
+    # If we can't, the .get() method raises a DoesNotExist exception.
+    # So the .get() method returns one model instance or raises an exception.
+    category = Category.objects.get(name__iexact=category_name)
+    context_dict['category'] = category
+    # Retrieve all of the associated News.
+    # Note that filter returns >= 1 model instance.
+    news_list = News.objects.filter(category=category).order_by('-rank')
 
-        for news in news_list:
-            news.url = encode_url(news.title)
-            try:
-                news.comments = Comments.objects.filter(news=news).count()
-            except:
-                news.comments = None
+    for news in news_list:
+        news.url = encode_url(news.title)
+        try:
+            news.comments = Comments.objects.filter(news=news).count()
+        except Comments.DoesNotExist:
+            news.comments = None
             
-            if news.author == user:
-                news.like = True
-                news.dislike = True
-                continue
+        if news.author == user:
+            news.like = True
+            news.dislike = True
+            continue
     
-            #determine whether user click the like button
-            try:
-                likes_news = LikeNews.objects.get(user=user, news=news)
-                news.like = True
-            except:
-                pass
-            #determine whether user click the dislike button
-            try:
-                dislikes_news = DislikeNews.objects.get(user=user, news=news)
-                news.dislike = True
-            except:
-                pass
+        #determine whether user click the like button
+        try:
+            likes_news = LikeNews.objects.get(user=user, news=news)
+            news.like = True
+        except LikeNews.DoesNotExist:
+            pass
+        #determine whether user click the dislike button
+        try:
+            dislikes_news = DislikeNews.objects.get(user=user, news=news)
+            news.dislike = True
+        except DislikeNews.DoesNotExist:
+            pass
 
-        # Adds our results list to the template context under name News.
-        context_dict['news'] = news_list
+    # Adds our results list to the template context under name News.
+    context_dict['news'] = news_list
 
-        # We also add the category object from the database to the context dictionary.
-        # We'll use this in the template to verify that the category exists.
-    except Category.DoesNotExist:
-        # We get here if we didn't find the specified category.
-        # Don't do anything - the template displays the "no category" message for us.
+    try:
+        like_category = LikeCategory.objects.get(user=user, category=category)
+        context_dict['like'] = True
+    except LikeCategory.DoesNotExist:
         pass
 
-    like_category = LikeCategory.objects.filter(user=user)
-    for x in like_category:
-        if x.category == category.name: 
-            context_dict['like'] = True
-            break
-        else:
-            context_dict['like'] = False
     if request.method == 'POST':
         query = request.POST.get('query')
         if query:
@@ -177,7 +168,7 @@ def get_books(request, category_name_url):
     context_dict['news_list'] = news_list
     try:
         user = User.objects.get(username=request.user)
-    except:
+    except User.DoesNotExist:
         user = None
 
     # Get the books.
@@ -192,7 +183,7 @@ def get_books(request, category_name_url):
         try:
             like_book = LikeBook.objects.get(user=user, book=book)
             book.like = True
-        except:
+        except LikeBook.DoesNotExist:
             pass     
 
     context_dict['books'] = books
@@ -393,7 +384,7 @@ def user_profile(request, author):
     up = UserProfile.objects.get(user=user)
     try:
         current_user = User.objects.get(username=request.user)
-    except:
+    except User.DoesNotExist:
         current_user = None
 
     if user == current_user:
@@ -405,14 +396,11 @@ def user_profile(request, author):
 
     try:
         news_list = News.objects.filter(author=user)
-        print(news_list)
-        #news_list.count = news_list.count()
     except:
         news_list = None
 
     try:
         comments = Comments.objects.filter(user=user)
-        #comments.count = comments.count()
         print(comments)
     except:
         comments = None
@@ -427,26 +415,26 @@ def user_profile(request, author):
 @login_required
 def profile(request):
     context_dict = {}
-    u = User.objects.get(username=request.user)
+    user = User.objects.get(username=request.user)
     context_dict['reset'] = True
 
     try:
-        up = UserProfile.objects.get(user=u)
+        up = UserProfile.objects.get(user=user)
         up.gender = up.get_gender_display()
-    except :
+    except UserProfile.DoesNotExist:
         up = None
 
     try:
-        news_list = News.objects.filter(author=u)
-    except:
+        news_list = News.objects.filter(author=user)
+    except News.DoesNotExist:
         news_list = None
 
     try:
-        comments = Comments.objects.filter(user=u)
-    except:
+        comments = Comments.objects.filter(user=user)
+    except Comments.DoesNotExist:
         comments = None
 
-    context_dict['another_user'] = u
+    context_dict['another_user'] = user
     context_dict['user_profile'] = up
     context_dict['news'] = news_list
     context_dict['comments'] = comments
@@ -465,14 +453,12 @@ def like_category(request):
             likes = category.likes + 1
             category.likes = likes
             category.save()
-        u = User.objects.get(username=request.user)
-        try:
-            like_category = LikeCategory(user=u, category=category.name)
-            like_category.save()
-        except:
-            pass
+        user = User.objects.get(username=request.user)
+    
+        like_category = LikeCategory(user=user, category=category)
+        like_category.save()
             
-    return HttpResponse(likes)
+    #return HttpResponse(likes)
 
 def register(request):
     # A boolean value for telling the template whether the registration was successful.
@@ -552,7 +538,7 @@ def user_login(request):
         else:
             try:
                 user = User.objects.get(username=username)
-            except:
+            except User.DoesNotExist:
                 user = None
             if not user:
                 user_error = 'User {} does not exit!'.format(username)

@@ -32,10 +32,10 @@ class Category(models.Model):
 
 class LikeCategory(models.Model):
     user = models.ForeignKey(User)
-    category = models.CharField(max_length=128, unique=True)
+    category = models.ForeignKey(Category)
 
     def __str__(self):
-        return self.user.username + '-' + self.category
+        return self.user.username + '-' + self.category.name
 
 class Book(models.Model):
     category = models.ForeignKey(Category)
