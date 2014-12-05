@@ -213,34 +213,6 @@ def about(request):
     # Return and render the response, ensuring the count is passed to the template engine.
     return render(request, 'about.html', context_dict)
 
-def user_profile(request, author):
-    context_dict = {}
-    user = User.objects.get(username=author)
-    current_user = User.objects.get(username=request.user)
-    if user == current_user:
-        context_dict['reset'] = True
-    try:
-        up = UserProfile.objects.get(user=user)
-    except:
-        up = None
-
-    try:
-        news_list = News.objects.filter(author=u)
-    except:
-        news_list = None
-
-    try:
-        comments = Comments.objects.filter(user=u)
-    except:
-        comments = None
-    
-    context_dict['another_user'] = user
-    context_dict['user_profile'] = up
-    context_dict['news'] = news_list
-    context_dict['comments'] = comments
-
-    return render(request, 'profile.html', context_dict)
-
 """
 @login_required
 def add_category(request):
@@ -414,6 +386,43 @@ def user_logout(request):
 
     # Take the user back to the homepage.
     return HttpResponseRedirect('/share/')
+
+def user_profile(request, author):
+    context_dict = {}
+    user = User.objects.get(username=author)
+    up = UserProfile.objects.get(user=user)
+    try:
+        current_user = User.objects.get(username=request.user)
+    except:
+        current_user = None
+
+    if user == current_user:
+        context_dict['reset'] = True
+    else:
+        views = up.views + 1
+        up.views = views
+        up.save()
+
+    try:
+        news_list = News.objects.filter(author=user)
+        print(news_list)
+        #news_list.count = news_list.count()
+    except:
+        news_list = None
+
+    try:
+        comments = Comments.objects.filter(user=user)
+        #comments.count = comments.count()
+        print(comments)
+    except:
+        comments = None
+    
+    context_dict['another_user'] = user
+    context_dict['user_profile'] = up
+    context_dict['news'] = news_list
+    context_dict['comments'] = comments
+
+    return render(request, 'profile.html', context_dict)
 
 @login_required
 def profile(request):

@@ -4,7 +4,7 @@
 
 {% block main_col %}
 <div class="col-md-offset-3">
-    <h1>Profile</h1>
+    {{ user_profile.views }} <label>profile views</label>
     {% if reset %}
     <h5><a href="/share/reset_password">Reset password</a></h5>
     {% endif %}
@@ -19,7 +19,7 @@
     {% endif %}
     
     {% if news %}
-        <label>Post</label>
+        {{ news.count }} <label>Posts</label>
         {% load endless %}
         {% paginate news %}
 
@@ -32,7 +32,7 @@
 
     {% if comments %}
     <div>
-        <label>Comments</label>
+        {{ comments.count }} <label>Comments</label>
         {% load endless %}
         {% paginate comments %}
 

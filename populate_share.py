@@ -93,5 +93,5 @@ def add_book(cat, name, url, author=''):
 
 # Start execution here!
 if __name__ == '__main__':
-    print("Starting Rango population script...")
+    print("Starting Startup News population script...")
     populate()

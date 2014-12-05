@@ -16,6 +16,7 @@ class UserProfile(models.Model):
     gender = models.CharField(max_length=1, choices=GENDER)
     website = models.URLField(blank=True)
     picture = models.ImageField(upload_to='profile_images', blank=True)
+    views = models.IntegerField(default=0)
 
     # Override the __unicode__() method to return out something meaningful!
     def __str__(self):
