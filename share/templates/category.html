@@ -15,6 +15,8 @@
         {% if user.is_authenticated %}
             {% if not like %}
                 <button id ="likes-category" data-catid="{{ category.id }}" class="btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-heart"></span></button>
+            {% else %}
+                <button id ="likes-category" data-catid="{{ category.id }}" class="btn btn-danger btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-heart"></span></button>
             {% endif %}
         {% endif %}
     </p>
@@ -38,13 +40,15 @@
                 <b id="likes-{{ new.id }}">{{ new.likes }}</b>
                 {% if not new.like %}
                     <button id ="likes-news" data-catid="{{ new.id }}" class="news-like btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+                {% else %}
+                    <button id ="likes-news" data-catid="{{ new.id }}" class="news-like btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
                 {% endif %}
-                likes |
                 <b id="dislikes-{{ new.id }}">{{ new.dislikes }}</b>
                 {% if not new.dislike %}
                     <button id ="dislikes-news" data-catid="{{ new.id }}" class="news-dislike btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+                {% else %}
+                     <button id ="likes-news" data-catid="{{ new.id }}" class="news-like btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
                 {% endif %}
-                dislikes
                 {% if new.comments %}
                     <a href="/share/news/{{ new.id }}/comments">{{ new.comments }} comments</a>
                 {% else %}

@@ -2,7 +2,9 @@ $(document).ready(function() {
 	$('#likes-category').click(function() {
 		var catid;
 		catid = $(this).attr("data-catid");
-		$('#likes-category').hide();
+		$('#likes-category').prop("disabled", true);
+		$('#likes-category').removeClass();
+		$('#likes-category').addClass("btn btn-danger btn-sm");
 		var data = parseInt($('#like-category-count').html()) + 1;
 		$('#like-category-count').html(data);
 		$.get('/share/like_category/', {category_id: catid});
@@ -11,8 +13,9 @@ $(document).ready(function() {
 	$('.news-like').click(function() {
 		var newsid;
 		newsid = $(this).attr("data-catid");
-		var me = $(this);
-		me.hide();
+		$(this).prop("disabled", true);
+		$(this).removeClass();
+		$(this).addClass("btn btn-primary btn-sm");
 		var data = parseInt($('#likes-' + newsid).html()) + 1;
 		$('#likes-' + newsid).html(data);
 		$.get('/share/likes_news/', {news_id: newsid});
@@ -21,8 +24,9 @@ $(document).ready(function() {
 	$('.news-dislike').click(function() {
 		var cnews;
 		newsid = $(this).attr("data-catid");
-		var me = $(this);
-		me.hide();
+		$(this).prop("disabled", true);
+		$(this).removeClass();
+		$(this).addClass("btn btn-primary btn-sm");
 		var data = parseInt($('#dislikes-' + newsid).html()) + 1;
 		$('#dislikes-' + newsid).html(data);
 		$.get('/share/dislikes_news/', {news_id: newsid});
@@ -31,21 +35,23 @@ $(document).ready(function() {
 	$('.vote-up').click(function() {
 		var commentd;
 		commentid = $(this).attr("data-catid");
-		var me = $(this);
-		$.get('/share/vote_comment/', {comment_id: commentid}, function(data) {
-			$('#vote-' + commentid).html(data);
-			me.hide();
-		});
+		var data = parseInt($('#vote-' + commentid).html()) + 1;
+		$('#vote-' + commentid).html(data);
+		$(this).prop("disabled", true);
+		$(this).removeClass();
+		$(this).addClass("btn btn-primary btn-sm");
+		$.get('/share/vote_comment/', {comment_id: commentid});
 	});
 	
     $('.book-like').click(function() {
 		var bookid;
 		bookid = $(this).attr("data-catid");
-		var me = $(this);
-		$.get('/share/likes_book/', {book_id: bookid}, function(data) {
-			$('#likes-' + bookid).html(data);
-			me.hide();
-		});
+		var data = parseInt($('#likes-' + bookid).html()) + 1;
+		$('#likes-' + bookid).html(data);
+		$(this).prop("disabled", true);
+		$(this).removeClass();
+		$(this).addClass("btn btn-danger btn-sm");
+		$.get('/share/likes_book/', {book_id: bookid});
 	});
 
 	$('#suggestion1').keyup(function() {

@@ -17,6 +17,7 @@ class UserProfile(models.Model):
     website = models.URLField(blank=True)
     picture = models.ImageField(upload_to='profile_images', blank=True)
     views = models.IntegerField(default=0)
+    reputation = models.IntegerField(default=0)
 
     # Override the __unicode__() method to return out something meaningful!
     def __str__(self):

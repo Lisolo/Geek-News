@@ -576,6 +576,10 @@ def likes_news(request):
     likes = 0
     if news_id:
         news = News.objects.get(id=int(news_id))
+        news_author = news.author
+        up = UserProfile.objects.get(user=news_author)
+        up.reputation += 1
+        up.save()
         # Get the current user
         user = User.objects.get(username=request.user)
         # Save liked news to the database.

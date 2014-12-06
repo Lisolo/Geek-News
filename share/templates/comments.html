@@ -11,7 +11,9 @@
                 {{ comment.content }} -
                 <b id="vote-{{ comment.id }}">{{ comment.points }}</b>
                 {% if not comment.vote %} 
-                <button id ="vote-up" data-catid="{{ comment.id }}" class="vote-up btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>
+                    <button id ="vote-up" data-catid="{{ comment.id }}" class="vote-up btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>
+                {% else %}
+                    <button id ="vote-up" data-catid="{{ comment.id }}" class="vote-up btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>
                 {% endif %}
                  points {{ comment.time }} <a href="/share/user/{{ comment.user }}">{{ comment.user }}</a>
             </div>

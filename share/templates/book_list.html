@@ -14,6 +14,8 @@
             {% if user.is_authenticated %}
                 {% if not book.like %}
                     <button id ="likes-book" data-catid="{{ book.id }}" class="book-like btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-heart"></span></button>
+                {% else %}
+                    <button id ="likes-book" data-catid="{{ book.id }}" class="book-like btn btn-danger btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-heart"></span></button>
                 {% endif %}
             {% endif %}
         </div>

@@ -4,9 +4,10 @@
 
 {% block main_col %}
 <div class="col-md-offset-3">
-    {{ user_profile.views }} <label>profile views</label>
+    {{ user_profile.views }} <label>profile views</label></br>
+    {{ user_profile.reputation }} <label>reputation</label>
     {% if reset %}
-    <h5><a href="/share/reset_password">Reset password</a></h5>
+        <h5><a href="/share/reset_password">Reset password</a></h5>
     {% endif %}
     <p>Email: {{ another_user.email }}</p>
     {% if user_profile %}
