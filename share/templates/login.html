@@ -12,7 +12,7 @@
             {% elif disabled_account %}
             <p><strong>Your startup news account is currently disables; we can't log you in!</strong></p>
         {% endif %}
-        <form class="form-signin span4" id="login_form" method="post" action="/share/login/">
+        <form class="form-signin span4" id="login_form" method="post" action="./?next={{ redirect_to }}">
             {% csrf_token %}
             <div class="form-group">
                 <label>Username:</label> 

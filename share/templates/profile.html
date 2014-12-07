@@ -16,8 +16,8 @@
            <img src="{{ user_profile.picture.url }}" />
         {% endif %}
            <p>Gender: {{ user_profile.gender }}</p>
-           <p>Join in: {{ user_profile.join }}</p>
     {% endif %}
+    <p>Join in: {{ another_user.date_joined }}</p>
     
     {% if news %}
         {{ news.count }} <label>Posts</label>

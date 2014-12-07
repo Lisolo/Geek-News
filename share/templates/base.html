@@ -35,14 +35,14 @@
                             <h5 class="navbar-text"><a href="/share/profile/"><span class="glyphicon glyphicon-user"></span>{{ user.username|capfirst }}!</a></h5>
                         </div>
                         <div class="">
-                            <h5 class="navbar-text"><a href="/share/logout/">Logout</a></h5>
+                            <h5 class="navbar-text"><a href="/share/logout/?next={{ request.path }}">Logout</a></h5>
                         </div>
                         {% else %}
                         <div class="col-md-1 col-md-offset-2">
                             <h5 class="navbar-text"><a href="/share/register/">Register</a></h5>
                         </div>
                         <div class="col-md-1">           
-                            <h5 class="navbar-text"><a href="/share/login/">Login</a></h5>
+                            <h5 class="navbar-text"><a href="/share/login/?next={{ request.path }}">Login</a></h5>
                         </div>
                         {% endif %}
                     </ul> 
