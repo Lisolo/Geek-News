@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} - {{ category_name }}{% endblock %}
+
+{% block side_col %}
+    {% include 'left_sidebar.html' %}
+{% endblock %}
+
+{% block main_col %}
+<div class="col-md-offset-2">
+    <div id="news">
+    {% load endless %}
+    {% paginate news %}
+       {% if user.is_authenticated %}
+            {% for new in news %}
+            <div class="row">
+                <a href="/share/goto/?new_id={{ new.id }}" target="_newtab">{{ new.title }}</a>-<a href="/share/user/{{ new.author }}">{{ new.author }}</a>
+                {% if new.views > 1 %}
+                    ({{ new.views }} views){{ new.time }}
+                {% else %}
+                    ({{ new.views }} view){{ new.time }}
+                {% endif %}
+                <h5>
+                <b id="likes-{{ new.id }}">{{ new.likes }}</b>
+                {% if not new.like %}
+                    <button id ="likes-news" data-catid="{{ new.id }}" class="news-like btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+                {% else %}
+                    <button id ="likes-news" data-catid="{{ new.id }}" class="news-like btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+                {% endif %}
+                <b id="dislikes-{{ new.id }}">{{ new.dislikes }}</b>
+                {% if not new.dislike %}
+                    <button id ="dislikes-news" data-catid="{{ new.id }}" class="news-dislike btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+                {% else %}
+                     <button id ="likes-news" data-catid="{{ new.id }}" class="news-like btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+                {% endif %}
+                {% if new.comments %}
+                    <a href="/share/news/{{ new.id }}/comments">{{ new.comments }} comments</a>
+                {% else %}
+                  <a href="/share/news/{{ new.id }}/comments">discuss</a>
+                {% endif %}
+                </h5>
+            </div>
+            {% endfor %}
+        {% else %}
+            {% for new in news %}
+            <div class="row">
+                <a href="/share/goto/?new_id={{ new.id }}">{{ new.title }}</a>-<a href="/share/user/{{ new.author }}">{{ new.author }}</a>
+                {% if new.views > 1 %}
+                    ({{ new.views }} views){{ new.time }}
+                {% else %}
+                    ({{ new.views }} view){{ new.time }}
+                {% endif %}
+                <h5>
+                <b id="like-new-count">{{ new.likes }}</b>
+                    likes |
+                <b id="dislike-new-count">{{ new.dislikes }}</b>
+                    dislikes
+                {% if new.comments %}
+                    <a href="/share/news/{{ new.id }}/comments">{{ new.comments }} comments</a>
+                {% else %}
+                  <a href="/share/news/{{ new.id }}/comments">discuss</a>
+                {% endif %}
+                </h5>
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% show_pages %}
+    </div>
+</div>
+{% endblock %}

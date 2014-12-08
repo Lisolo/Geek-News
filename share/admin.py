@@ -1,9 +1,10 @@
 from django.contrib import admin
 
-from .models import Category, LikeCategory, News, LikeNews, DislikeNews, Comments, VoteComments, Book, LikeBook, UserProfile
+from .models import *
 
 
 admin.site.register(Category)
+admin.site.register(KeyWord)
 admin.site.register(LikeCategory)
 admin.site.register(News)
 admin.site.register(LikeNews)

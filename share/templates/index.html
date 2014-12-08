@@ -15,10 +15,12 @@
 
 <div class="row-fluid">
     <div class="col-md-6">
-        <h2>Top Categories</h2>
+        <h2>Top Tags</h2>
         {% if categories %}
             {% for category in categories %}
-            <li><h4><a href="/share/category/{{ category.url }}">{{ category.name }}</a></h4></li>
+            <div class="row">
+                <h4><a href="/share/category/{{ category.url }}"><span class="label label-{{ category.color }}">{{ category.name }}</a></span></h4>
+            </div>
             {% endfor %}
         {% else %}
         <strong>No categories at present.</strong>

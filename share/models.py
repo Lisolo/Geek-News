@@ -37,6 +37,13 @@ class LikeCategory(models.Model):
     def __str__(self):
         return self.user.username + '-' + self.category.name
 
+class KeyWord(models.Model):
+    word = models.CharField(max_length=128, unique=True)
+    rank = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.word
+
 class Book(models.Model):
     category = models.ForeignKey(Category)
     name = models.CharField(max_length=128, unique=True)

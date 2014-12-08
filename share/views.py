@@ -1,9 +1,9 @@
-from datetime import datetime
 from random import choice
 
-from .models import Category, LikeCategory, News, LikeNews, DislikeNews, Comments, VoteComments, UserProfile, Book, LikeBook
+from .models import *
+from .forms import *
+from .keyword_analysis import analysis
 from .bing_search import run_query
-from .forms import CategoryForm, NewsForm, CommentsForm, UserForm, UserProfileForm, CaptchaTestForm, reset_form
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse
@@ -78,9 +78,11 @@ def index(request):
     # Order the categories by no. likes in descending order.
     # Retrieve the top 5 only - or all if less than 5.
     # Place the list in our context_dict dictionary which will be passed to the template engine.
+    color = ['default', 'primary', 'success', 'info', 'warning', 'danger']
     top_category_list = Category.objects.order_by('-likes')[:5]
     for category in top_category_list:
         category.url = encode_url(category.name)
+        category.color = choice(color)
     context_dict = {'categories': top_category_list}
     sugg_list = get_news_list()
     context_dict['news_list'] = sugg_list
@@ -232,6 +234,66 @@ def likes_book(request):
             book.save()
         return HttpResponse(likes)
 
+def get_news(request):
+    user = User.objects.get(username=request.user)
+    news_list = News.objects.all().order_by('-rank')
+    for news in news_list:
+        news.url = encode_url(news.title)
+        try:
+            news.comments = Comments.objects.filter(news=news).count()
+        except Comments.DoesNotExist:
+            news.comments = None
+        if news.author == user:
+            news.like = True
+            news.dislike = True
+            continue
+        # Determine whether user click the like button
+        try:
+            likes_news = LikeNews.objects.get(user=user, news=news)
+            news.like = True
+        except LikeNews.DoesNotExist:
+            pass
+        #Determine whether user click the dislike button
+        try:
+            dislikes_news = DislikeNews.objects.get(user=user, news=news)
+            news.dislike = True
+        except DislikeNews.DoesNotExist:
+            pass
+    # Adds our results list to the template context under name News.
+    return render(request, 'news.html', {'news': news_list})
+
+@login_required
+def submit(request):
+    context_dict = {}
+    sugg_list = get_news_list()
+    context_dict = {}
+    context_dict['news_list'] = sugg_list
+    if request.method == 'POST':
+        news_form = NewsForm(data=request.POST)
+        if news_form.is_valid():
+            # This time we cannot commit straight away.
+            # Not all fields are automatically populated!
+            news = news_form.save(commit=False)
+            author = User.objects.get(username=request.user)
+            # Save the author of news.
+            news.author = author
+            words = analysis(news.title)
+            for word in words:
+                try:
+                    keyword = KeyWord.objects.get(word=word)
+                    keyword.rank += 1
+                    keyword.save()
+                except KeyWord.DoesNotExist:
+                    keyword = KeyWord(word=word)
+                    keyword.save()
+            return HttpResponseRedirect('/share')   
+    else:
+        news_form = NewsForm()
+    context_dict['form'] = news_form
+
+    return render(request, 'submit.html', context_dict)
+    
+
 def about(request):
     context_dict = {}
     news_list = get_news_list()
@@ -327,12 +389,6 @@ def user_logout(request):
     logout(request)
     # Take the user back to the homepage.
     return HttpResponseRedirect(redirect_to)
-
-def password_reset(request):
-    if request.method == 'POST':
-        pass
-    else:
-        return render(request, 'password_reset.html', {})
 
 def user_profile(request, author):
     context_dict = {}
@@ -433,13 +489,9 @@ def add_news(request, category_name_url):
                 news.category = cat
             except Category.DoesNotExist:
                 return render(request, 'add_new.html', context_dict)
-            # Also, create a default value for the number of views.
-            news.views = 0
             author = User.objects.get(username=request.user)
             # Save the author of news.
             news.author = author
-            # Get the current time and save it to news.time.
-            #news.time = datetime.now().strftime('%Y-%m-%d')
             # With this, we can then save our new model instance.
             news.save()
             # Now that the New is saved, display the category instead.
@@ -515,8 +567,6 @@ def add_comment(request, news_id):
             user = User.objects.get(username=request.user)
             new_comments.user = user
             new_comments.news = news
-            # Get the current time and save it to news.time.
-            #new_comments.time = datetime.now().strftime('%Y-%m-%d %H:%M')
             # Save the new model instance.
             new_comments.save()
     else:
@@ -570,8 +620,7 @@ def auto_add_news(request):
         if cat_id:
             u = User.objects.get(username=request.user)
             category = Category.objects.get(id=int(cat_id))
-            time = datetime.now().strftime('%Y-%m-%d')
-            news = News.objects.get_or_create(category=category, author=u, title=title, url=url, time=time)
+            news = News.objects.get_or_create(category=category, author=u, title=title, url=url)
             news_list = News.objects.filter(category=category).order_by('-views')
             # Adds our results list to the template context under name news_list.
             context_dict['news_list'] = news_list

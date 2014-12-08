@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} - Submit{% endblock %}
+
+{% block main_col %}
+<div class="container">
+    <h1>Add News</h1>
+    <br />
+
+    <div class="col-md-8">
+        {% if categoty_name_url %}
+            <div style="color: red;">The specified category does not exist!</div>
+    	{% else %}
+    	<form id="news_form" method="post" action="/share/submit/">
+    		{% csrf_token %}
+    		{% for hidden in form.hidden_fields %}
+            {{ hidden }}
+            {% endfor %}
+
+    		{% for field in form.visible_fields %}
+    		{{ field.help_text }}
+            <div class="col-md-4">
+    		   {{ field }}
+            </div>
+               <h5 class="text-danger">{{ field.errors }}</h5>
+            </br>
+    		{% endfor %}
+    		<button class="btn btn-info" type="submit">Submit it</button>
+    	</form>
+    	{% endif %}
+    </div>
+</div>
+{% endblock %}

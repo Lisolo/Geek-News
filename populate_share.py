@@ -10,42 +10,35 @@ from share.models import Category, Book, News
 from django.contrib.auth.models import User
 
 user = User.objects.get(username='solo')
-time = datetime.now().strftime('%Y-%m-%d')
 
 def populate():
     python_cat = add_cat('Python')
 
     add_news(cat=python_cat, user=user,
         title='Understanding decorators',
-        url='http://agiliq.com/blog/2012/11/understanding-decorators-2/',
-        time=time)
+        url='http://agiliq.com/blog/2012/11/understanding-decorators-2/')
 
     add_news(cat=python_cat, user=user,
         title='Hopeful Ramble: Web Scraping with Scrapy',
-        url='http://hopefulramble.blogspot.ca/2014/08/web-scraping-with-scrapy-first-steps_30.html',
-        time=time,)
+        url='http://hopefulramble.blogspot.ca/2014/08/web-scraping-with-scrapy-first-steps_30.html')
 
     add_news(cat=python_cat, user=user,
         title='Reducers explained (through Python)',
-        url='http://adambard.com/blog/Reducers-explained-through-Python/',
-        time=time)
+        url='http://adambard.com/blog/Reducers-explained-through-Python/')
 
     django_cat = add_cat('Django')
 
     add_news(cat=django_cat, user=user,
         title='Core Concepts of Django ModelForms',
-        url='http://pydanny.com/core-concepts-django-modelforms.html',
-        time=time)
+        url='http://pydanny.com/core-concepts-django-modelforms.html')
 
     add_news(cat=django_cat, user=user,
         title='Getting Started with Django Rest Framework and AngularJS',
-        url='http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html',
-        time=time)
+        url='http://blog.kevinastone.com/getting-started-with-django-rest-framework-and-angularjs.html')
 
     add_news(cat=django_cat, user=user,
         title='An Architecture for Django Templates',
-        url='https://oncampus.oberlin.edu/webteam/2012/09/architecture-django-templates',
-        time=time)    
+        url='https://oncampus.oberlin.edu/webteam/2012/09/architecture-django-templates')    
     
     add_book(cat=python_cat,
         name='Wikibooks Non-Programmers Tutorial for Python',
@@ -84,8 +77,8 @@ def add_cat(name):
     c = Category.objects.get_or_create(name=name)[0]
     return c
 
-def add_news(cat, user, title, url, time):
-    news = News.objects.get_or_create(category=cat, author=user, title=title, url=url, time=time)[0]
+def add_news(cat, user, title, url):
+    news = News.objects.get_or_create(category=cat, author=user, title=title, url=url)[0]
     return news
 
 def add_book(cat, name, url, author=''):
