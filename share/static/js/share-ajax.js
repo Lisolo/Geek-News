@@ -1,18 +1,18 @@
 $(document).ready(function() {
-	$('#likes-category').click(function() {
-		var catid;
-		catid = $(this).attr("data-catid");
-		$('#likes-category').prop("disabled", true);
-		$('#likes-category').removeClass();
-		$('#likes-category').addClass("btn btn-danger btn-sm");
-		var data = parseInt($('#like-category-count').html()) + 1;
-		$('#like-category-count').html(data);
-		$.get('/share/like_category/', {category_id: catid});
+	$('#likes-tag').click(function() {
+		var tagid;
+		tagid = $(this).attr("data-tagid");
+		$('#likes-tag').prop("disabled", true);
+		$('#likes-tag').removeClass();
+		$('#likes-tag').addClass("btn btn-danger btn-sm");
+		var data = parseInt($('#like-tag-count').html()) + 1;
+		$('#like-tag-count').html(data);
+		$.get('/share/like_tag/', {tag_id: tagid});
 	});
 
 	$('.news-like').click(function() {
 		var newsid;
-		newsid = $(this).attr("data-catid");
+		newsid = $(this).attr("data-newsid");
 		$(this).prop("disabled", true);
 		$(this).removeClass();
 		$(this).addClass("btn btn-primary btn-sm");
@@ -22,8 +22,8 @@ $(document).ready(function() {
 	});
 
 	$('.news-dislike').click(function() {
-		var cnews;
-		newsid = $(this).attr("data-catid");
+		var newsid;
+		newsid = $(this).attr("data-newsid");
 		$(this).prop("disabled", true);
 		$(this).removeClass();
 		$(this).addClass("btn btn-primary btn-sm");
@@ -34,7 +34,7 @@ $(document).ready(function() {
     
 	$('.vote-up').click(function() {
 		var commentd;
-		commentid = $(this).attr("data-catid");
+		commentid = $(this).attr("data-commid");
 		var data = parseInt($('#vote-' + commentid).html()) + 1;
 		$('#vote-' + commentid).html(data);
 		$(this).prop("disabled", true);
@@ -45,7 +45,7 @@ $(document).ready(function() {
 	
     $('.book-like').click(function() {
 		var bookid;
-		bookid = $(this).attr("data-catid");
+		bookid = $(this).attr("data-tagid");
 		var data = parseInt($('#likes-' + bookid).html()) + 1;
 		$('#likes-' + bookid).html(data);
 		$(this).prop("disabled", true);
@@ -63,11 +63,11 @@ $(document).ready(function() {
 	});
 	
 	$('.share-add').click(function() {
-		var catid = $(this).attr("data-catid");
+		var tagid = $(this).attr("data-tagid");
 		var url = $(this).attr("data-url");
 		var title = $(this).attr("data-title");
 		var me = $(this);
-		$.get('/share/auto_add_news/', {category_id : catid, url: url, title: title}, function(data) {
+		$.get('/share/auto_add_news/', {tag_id : tagid, url: url, title: title}, function(data) {
 			$('#news').html(data);
 			me.hide();
 		});

@@ -3,7 +3,7 @@ from captcha.fields import CaptchaField
 
 from django.contrib.auth.models import User 
 
-from .models import News, Comments, Category, UserProfile
+from .models import News, Comments, Tag, UserProfile
 
 class UserForm(forms.ModelForm):
     username = forms.CharField(help_text="Username")
@@ -50,15 +50,17 @@ class CaptchaTestForm(forms.Form):
     captcha = CaptchaField()
     captcha.widget.attrs['class'] = 'input-sm form-control'
 
-class CategoryForm(forms.ModelForm):
-    name = forms.CharField(max_length=128, help_text="Please enter the category name.")
+class TagForm(forms.ModelForm):
+    name = forms.CharField(max_length=128, help_text="Please enter the tag name.")
+    name.widget.attrs['class'] = 'input-sm form-control'
+
     views = forms.IntegerField(widget=forms.HiddenInput(), initial=0)
     likes = forms.IntegerField(widget=forms.HiddenInput(), initial=0)
 
     # An inline class to provide additional information on the form.
     class Meta:
         # Provide an association between the ModelForm and a model
-        model = Category
+        model = Tag
         fields = ('name', 'views', 'likes')
 
 class NewsForm(forms.ModelForm):
@@ -66,7 +68,7 @@ class NewsForm(forms.ModelForm):
     title.widget.attrs['class'] = 'form-control'
 
     url = forms.URLField(max_length=200, help_text="Please enter the URL of the news.")
-    url.widget.attrs['class'] = 'input-sm form-control'
+    url.widget.attrs['class'] = 'form-control'
 
     views = forms.IntegerField(widget=forms.HiddenInput(), initial=0)
     likes = forms.IntegerField(widget=forms.HiddenInput(), initial=0)

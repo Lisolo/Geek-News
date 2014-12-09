@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} - Tags{% endblock %}
+
+{% block side_col %}
+    {% include 'left_sidebar.html' %}
+{% endblock %}
+
+{% block main_col %}
+   {% for tag in tags %}
+       <h4><a href="/share/tag_news/{{ tag.url }}"><span class="label label-{{ tag.color }}">{{ tag.name }}</a></span></h4>
+   {% endfor %}
+{% endblock %}

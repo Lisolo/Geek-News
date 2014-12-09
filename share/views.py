@@ -79,11 +79,11 @@ def index(request):
     # Retrieve the top 5 only - or all if less than 5.
     # Place the list in our context_dict dictionary which will be passed to the template engine.
     color = ['default', 'primary', 'success', 'info', 'warning', 'danger']
-    top_category_list = Category.objects.order_by('-likes')[:5]
-    for category in top_category_list:
-        category.url = encode_url(category.name)
-        category.color = choice(color)
-    context_dict = {'categories': top_category_list}
+    top_tag_list = Tag.objects.order_by('-likes')[:5]
+    for tag in top_tag_list:
+        tag.url = encode_url(tag.name)
+        tag.color = choice(color)
+    context_dict = {'top_tag_list': top_tag_list}
     sugg_list = get_news_list()
     context_dict['news_list'] = sugg_list
     news_list = News.objects.order_by('-likes')[:15]
@@ -109,28 +109,36 @@ def index(request):
     # We make use of the shortcut function to make our lives easier.
     return render(request, 'index.html', context_dict)
 
-def category(request, category_name_url):
-    # Change underscores in the category name to spaces.
+def tags(request):
+    color = ['default', 'primary', 'success', 'info', 'warning', 'danger']
+    tags = Tag.objects.all().order_by('-likes')
+    for tag in tags:
+        tag.url = encode_url(tag.name)
+        tag.color = choice(color)
+    return render(request, 'tags.html', {'tags': tags})
+
+def tag_news(request, tag_name_url):
+    # Change underscores in the tag name to spaces.
     # URLs don't handle spaces well, so we encode them as underscores.
     # We can then simply replace the underscores with spaces again to get the name.
-    category_name = decode_url(category_name_url)
+    tag_name = decode_url(tag_name_url)
     # Create a context dictionary which we can pass to the template rendering engine.
-    # We start by containing the name of the category passed by the user.
-    context_dict = {'category_name': category_name, 'category_name_url': category_name_url}
+    # We start by containing the name of the tag passed by the user.
+    context_dict = {'tag_name': tag_name, 'tag_name_url': tag_name_url}
     sugg_list = get_news_list()
     context_dict['news_list'] = sugg_list
     try:
         user = User.objects.get(username=request.user)
     except User.DoesNotExist:
         user = None
-    # Can we find a category with the given name?
+    # Can we find a tag with the given name?
     # If we can't, the .get() method raises a DoesNotExist exception.
     # So the .get() method returns one model instance or raises an exception.
-    category = Category.objects.get(name__iexact=category_name)
-    context_dict['category'] = category
+    tag = Tag.objects.get(name__iexact=tag_name)
+    context_dict['tag'] = tag
     # Retrieve all of the associated News.
     # Note that filter returns >= 1 model instance.
-    news_list = News.objects.filter(category=category).order_by('-rank')
+    news_list = News.objects.filter(tag=tag).order_by('-rank')
     for news in news_list:
         news.url = encode_url(news.title)
         try:
@@ -156,9 +164,9 @@ def category(request, category_name_url):
     # Adds our results list to the template context under name News.
     context_dict['news'] = news_list
     try:
-        like_category = LikeCategory.objects.get(user=user, category=category)
+        like_tag = LikeTag.objects.get(user=user, tag=tag)
         context_dict['like'] = True
-    except LikeCategory.DoesNotExist:
+    except LikeTag.DoesNotExist:
         pass
     if request.method == 'POST':
         query = request.POST.get('query')
@@ -167,35 +175,36 @@ def category(request, category_name_url):
             result_list = run_query(query)
             context_dict['result_list'] = result_list
     # Go render the response and return it to the client.
-    return render(request, 'category.html', context_dict)
+    return render(request, 'tag_news.html', context_dict)
 
 @login_required
-def like_category(request):
+def like_tag(request):
     cat_list = []
     if request.method == 'GET':
-        cat_id = request.GET['category_id']
-    if cat_id:
-        category = Category.objects.get(id=int(cat_id))
-        if category:
-            likes = category.likes + 1
-            category.likes = likes
-            category.save()
+        tag_id = request.GET['tag_id']
+    if tag_id:
+        tag = Tag.objects.get(id=int(tag_id))
+        if tag:
+            likes = tag.likes + 1
+            tag.likes = likes
+            tag.save()
         user = User.objects.get(username=request.user)
-        like_category = LikeCategory(user=user, category=category)
-        like_category.save()
+        like_tag = LikeTag(user=user, tag=tag)
+        like_tag.save()
+    return HttpResponse(likes)
 
 def books(request):
     context_dict = {}
     color = ['default', 'primary', 'success', 'info', 'warning', 'danger']
-    cat_list = Category.objects.all().order_by('-likes')
-    for category in cat_list:
-        category.url = encode_url(category.name)
-        category.color = choice(color)
-    context_dict['cat_list'] = cat_list
+    tag_list = Tag.objects.all().order_by('-likes')
+    for tag in tag_list:
+        tag.url = encode_url(tag.name)
+        tag.color = choice(color)
+    context_dict['tag_list'] = tag_list
     return render(request, 'books.html', context_dict)
 
-def get_books(request, category_name_url):
-    category_name = decode_url(category_name_url)
+def get_books(request, tag_name_url):
+    tag_name = decode_url(tag_name_url)
     context_dict = {}
     news_list = get_news_list()
     context_dict['news_list'] = news_list
@@ -205,8 +214,8 @@ def get_books(request, category_name_url):
         user = None
     # Get the books.
     try:
-        category = Category.objects.get(name=category_name)
-        books = Book.objects.filter(category=category)
+        tag = Tag.objects.get(name=tag_name)
+        books = Book.objects.filter(tag=tag)
     except:
         context_dict['books'] = None
     for book in books:
@@ -216,7 +225,7 @@ def get_books(request, category_name_url):
         except LikeBook.DoesNotExist:
             pass     
     context_dict['books'] = books
-    context_dict['category_name'] = category_name
+    context_dict['tag_name'] = tag_name
     return render(request, 'book_list.html', context_dict)
 
 @login_required
@@ -277,7 +286,10 @@ def submit(request):
             author = User.objects.get(username=request.user)
             # Save the author of news.
             news.author = author
+            news.save()
             words = analysis(news.title)
+            name = request.POST['tag_name']
+            Tag.objects.get_or_create(name=name)
             for word in words:
                 try:
                     keyword = KeyWord.objects.get(word=word)
@@ -289,7 +301,9 @@ def submit(request):
             return HttpResponseRedirect('/share')   
     else:
         news_form = NewsForm()
-    context_dict['form'] = news_form
+        tag_form = TagForm()
+    context_dict['news_form'] = news_form
+    context_dict['tag_form'] = tag_form
 
     return render(request, 'submit.html', context_dict)
     
@@ -443,65 +457,37 @@ def profile(request):
     context_dict['comments'] = comments
     return render(request, 'profile.html', context_dict)
 
-"""
 @login_required
-def add_category(request):
-    cat_list = get_category_list()
-    context_dict = {}
-    context_dict['cat_list'] = cat_list
-    # A HTTP POST?
-    if request.method == 'POST':
-        category_form = CategoryForm(data=request.POST)
-        # Have we been provided with a valid form?
-        if category_form.is_valid():
-            # Save the new category to the database.
-            category_form.save(commit=True)
-            # Now call the index() view.
-            # The user will be shown the homeNew.
-            return index(request)
-        else:
-            # The supplied form contained errors - just print them to the terminal.
-            print(form.errors)
-    else:
-        # If the request was not a POST, display the form to enter details.
-        form = CategoryForm()
-    # Bad form (or form details), no form supplied...
-    # Render the form with error messages (if any).
-    context_dict['form'] = form
-    return render(request, 'add_category.html', context_dict)
-"""
-
-@login_required
-def add_news(request, category_name_url):
+def add_news(request, tag_name_url):
     sugg_list = get_news_list()
     context_dict = {}
     context_dict['news_list'] = sugg_list
-    category_name = decode_url(category_name_url)
+    tag_name = decode_url(tag_name_url)
     if request.method == 'POST':
         news_form = NewsForm(data=request.POST)
         if news_form.is_valid():
             # This time we cannot commit straight away.
             # Not all fields are automatically populated!
             news = news_form.save(commit=False)
-            # Retrieve the associated Category object so we can add it.
+            # Retrieve the associated Tag object so we can add it.
             try:
-                cat = Category.objects.get(name=category_name)
-                news.category = cat
-            except Category.DoesNotExist:
+                tag = Tag.objects.get(name=tag_name)
+                news.tag = tag
+            except Tag.DoesNotExist:
                 return render(request, 'add_new.html', context_dict)
             author = User.objects.get(username=request.user)
             # Save the author of news.
             news.author = author
             # With this, we can then save our new model instance.
             news.save()
-            # Now that the New is saved, display the category instead.
-            return category(request, category_name_url)
+            # Now that the New is saved, display the tag instead.
+            return tag_news(request, tag_name_url)
         else:
             print(news_form.errors)
     else:
         news_form = NewsForm()
-    context_dict['category_name_url'] = category_name_url
-    context_dict['category_name'] = category_name
+    context_dict['tag_name_url'] = tag_name_url
+    context_dict['tag_name'] = tag_name
     context_dict['form'] = news_form
     return render(request, 'add_news.html', context_dict)
 
@@ -541,22 +527,6 @@ def dislikes_news(request):
             news.save()
         return HttpResponse(dislikes)
 
-def comments(request, news_title_url):
-    context_dict = {}
-    news_title = decode_url(news_title_url)
-    news = News.objects.get(title=news_title)
-    comments = Comments.objects.filter(news=news).order_by('-points')
-    context_dict['comments'] = comments
-    for comment in comments:
-        if comment.user == user:
-            for vote_comment in vote_comments:
-                if comment.id == vote_comment.commentid:
-                    comment.vote = True
-                else:
-                    comment.vote = False
-    context_dict['news_title_url'] = news_title_url
-    return render(request, 'comments.html', context_dict)
-
 def add_comment(request, news_id):
     context_dict = {}
     news = News.objects.get(id=news_id)
@@ -572,20 +542,14 @@ def add_comment(request, news_id):
     else:
         comments_form = CommentsForm()
     comments = Comments.objects.filter(news=news).order_by('-points')
-    context_dict['comments'] = comments
-    try:
-        user = User.objects.get(username=request.user)
-        vote_comments = VoteComments.objects.filter(user=user)
-    except:
-        user = None
+    user = User.objects.get(username=request.user)
     for comment in comments:
-        if comment.user == user:
-            for vote_comment in vote_comments:
-                if comment == vote_comment.comment:
-                    comment.vote = True
-                    break
-                else:
-                    comment.vote = False
+        try:
+            vote_comment = VoteComments.objects.get(user=user, comment=comment)
+            comment.vote = True
+        except:
+            comment.vote = False
+    context_dict['comments'] = comments
     context_dict['form'] = comments_form
     context_dict['news_id'] = news_id
     return render(request, 'comments.html', context_dict)
@@ -614,14 +578,14 @@ def auto_add_news(request):
     title = None
     context_dict = {}
     if request.method == 'GET':
-        cat_id = request.GET['category_id']
+        tag_id = request.GET['tag_id']
         url = request.GET['url']
         title = request.GET['title']
         if cat_id:
             u = User.objects.get(username=request.user)
-            category = Category.objects.get(id=int(cat_id))
-            news = News.objects.get_or_create(category=category, author=u, title=title, url=url)
-            news_list = News.objects.filter(category=category).order_by('-views')
+            tag = Tag.objects.get(id=int(cat_id))
+            news = News.objects.get_or_create(tag=tag, author=u, title=title, url=url)
+            news_list = News.objects.filter(tag=tag).order_by('-views')
             # Adds our results list to the template context under name news_list.
             context_dict['news_list'] = news_list
     return render(request, 'news_list.html', context_dict)

@@ -11,14 +11,13 @@
                 {{ comment.content }} -
                 <b id="vote-{{ comment.id }}">{{ comment.points }}</b>
                 {% if not comment.vote %} 
-                    <button id ="vote-up" data-catid="{{ comment.id }}" class="vote-up btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>
+                    <button id ="vote-up" data-commid="{{ comment.id }}" class="vote-up btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>
                 {% else %}
-                    <button id ="vote-up" data-catid="{{ comment.id }}" class="vote-up btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>
+                    <button id ="vote-up" class="btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-chevron-up"></span></button>
                 {% endif %}
                  points {{ comment.time }} <a href="/share/user/{{ comment.user }}">{{ comment.user }}</a>
             </div>
         {% endfor %}
-
         {% show_pages %}
         <form id="news_form" method="post" action="/share/add_comment/{{ news_id }}/">
         {% csrf_token %}
@@ -33,7 +32,6 @@
     	    </div>
         {% endfor %}
         </form>
-    
     {% else %}
     {% paginate comments %}
         {% for comment in comments %}
@@ -41,7 +39,6 @@
                 {{ comment.content }} -{{ comment.points }} points {{ comment.time }} <a href="/share/user/{{ comment.user }}">{{ comment.user }}</a>
             </div>
         {% endfor %}
-
         {% show_pages %}
     {% endif %}
 {% endblock %}

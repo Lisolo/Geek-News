@@ -22,7 +22,7 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
-class Category(models.Model):
+class Tag(models.Model):
     name = models.CharField(max_length=128, unique=True)
     views = models.IntegerField(default=0)
     likes = models.IntegerField(default=0)
@@ -30,12 +30,12 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-class LikeCategory(models.Model):
+class LikeTag(models.Model):
     user = models.ForeignKey(User)
-    category = models.ForeignKey(Category)
+    tag = models.ForeignKey(Tag)
 
     def __str__(self):
-        return self.user.username + '-' + self.category.name
+        return self.user.username + '-' + self.tag.name
 
 class KeyWord(models.Model):
     word = models.CharField(max_length=128, unique=True)
@@ -45,7 +45,7 @@ class KeyWord(models.Model):
         return self.word
 
 class Book(models.Model):
-    category = models.ForeignKey(Category)
+    tag = models.ForeignKey(Tag)
     name = models.CharField(max_length=128, unique=True)
     url = models.URLField()
     author = models.CharField(max_length=128, blank=True)
@@ -62,7 +62,7 @@ class LikeBook(models.Model):
         return self.user.username + '-' + self.book.name
 
 class News(models.Model):
-    category = models.ForeignKey(Category)
+    tag = models.ForeignKey(Tag)
     author = models.ForeignKey(User)
     title = models.CharField(max_length=128)
     url = models.URLField()

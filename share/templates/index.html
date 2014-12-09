@@ -16,10 +16,10 @@
 <div class="row-fluid">
     <div class="col-md-6">
         <h2>Top Tags</h2>
-        {% if categories %}
-            {% for category in categories %}
+        {% if top_tag_list %}
+            {% for tag in top_tag_list %}
             <div class="row">
-                <h4><a href="/share/category/{{ category.url }}"><span class="label label-{{ category.color }}">{{ category.name }}</a></span></h4>
+                <h4><a href="/share/tag_news/{{ tag.url }}"><span class="label label-{{ tag.color }}">{{ tag.name }}</a></span></h4>
             </div>
             {% endfor %}
         {% else %}
@@ -30,7 +30,7 @@
         <h2>Hot News</h2>
         {% if news %}
             {% for new in news %}
-            <li><a href="/share/goto/?new_id={{ new.id }}">{{ new.title }}</a> - {{ new.category }} ({{ new.views }} view {{ new.likes }} <span class="glyphicon glyphicon-heart"></span>)</li>
+            <li><a href="/share/goto/?new_id={{ new.id }}">{{ new.title }}</a> - {{ new.tag }} ({{ new.views }} view {{ new.likes }} <span class="glyphicon glyphicon-heart"></span>)</li>
             {% endfor %}
         {% else %}
         <strong>No news at present.</strong>

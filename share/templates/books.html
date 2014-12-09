@@ -3,7 +3,7 @@
 {% block title %}{{ block.super }} - Books{% endblock %}
 
 {% block main_col %}
-    {% for category in cat_list %}
+    {% for category in tag_list %}
     <div class="row">
         <h3><a href="/share/book_list/{{ category.url }}"><span class="label label-{{ category.color }}">{{ category.name }}</span></a></h3>
     </div>

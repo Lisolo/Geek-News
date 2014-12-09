@@ -13,19 +13,25 @@
     	{% else %}
     	<form id="news_form" method="post" action="/share/submit/">
     		{% csrf_token %}
-    		{% for hidden in form.hidden_fields %}
-            {{ hidden }}
+    		{% for hidden in news_form.hidden_fields %}
+                {{ hidden }}
             {% endfor %}
-
-    		{% for field in form.visible_fields %}
-    		{{ field.help_text }}
-            <div class="col-md-4">
-    		   {{ field }}
-            </div>
-               <h5 class="text-danger">{{ field.errors }}</h5>
-            </br>
+    		{% for field in news_form.visible_fields %}
+    		    {{ field.help_text }}
+                <div class="col-md-4">
+    		       {{ field }}
+                </div>
+                <h5 class="text-danger">{{ field.errors }}</h5>
+                </br>
     		{% endfor %}
-    		<button class="btn btn-info" type="submit">Submit it</button>
+            <div class="col-md-4">
+                <input  class="form-control" type="text" name="tag_name" />
+            </div>
+            <h5>Please enter the name of the tag</h5>
+            <h5 class="text-danger"></h5>
+            <div class="col-md-4">
+    		    <button class="btn btn-info" type="submit">Submit it</button>
+            </div>
     	</form>
     	{% endif %}
     </div>
