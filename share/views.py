@@ -5,6 +5,7 @@ from .forms import *
 from .keyword_analysis import analysis
 from .bing_search import run_query
 
+from django.db import IntegrityError
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -286,10 +287,14 @@ def submit(request):
             author = User.objects.get(username=request.user)
             # Save the author of news.
             news.author = author
+            name = request.POST['tag_name']
+            try:
+                tag = Tag.objects.create(name=name)
+            except IntegrityError:
+                tag = Tag.objects.get(name=name)
+            news.tag = tag
             news.save()
             words = analysis(news.title)
-            name = request.POST['tag_name']
-            Tag.objects.get_or_create(name=name)
             for word in words:
                 try:
                     keyword = KeyWord.objects.get(word=word)
@@ -303,7 +308,6 @@ def submit(request):
         news_form = NewsForm()
         tag_form = TagForm()
     context_dict['news_form'] = news_form
-    context_dict['tag_form'] = tag_form
 
     return render(request, 'submit.html', context_dict)
     
@@ -387,7 +391,7 @@ def user_login(request):
             except User.DoesNotExist:
                 user = None
             if not user:
-                user_error = 'User {} does not exit!'.format(username)
+                user_error = 'User {} doesn\'t exit!'.format(username)
                 return render(request, 'login.html', {'user_error': user_error})
             else:
                 password_error = 'Incorrect password.'

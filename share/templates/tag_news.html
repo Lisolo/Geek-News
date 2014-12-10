@@ -35,17 +35,16 @@
                     ({{ new.views }} view){{ new.time }}
                 {% endif %}
                 <h5>
-                <b id="likes-{{ new.id }}">{{ new.likes }}</b>
-                {% if not new.like %}
-                    <button id ="likes-news" data-newsid="{{ new.id }}" class="news-like btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-                {% else %}
+                {% if new.like or new.dislike %}
+                    <b id="likes-{{ new.id }}">{{ new.likes }}</b>
                     <button id ="likes-news" class="btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-                {% endif %}
-                <b id="dislikes-{{ new.id }}">{{ new.dislikes }}</b>
-                {% if not new.dislike %}
-                    <button id ="dislikes-news" data-newsid="{{ new.id }}" class="news-dislike btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+                    <b id="dislikes-{{ new.id }}">{{ new.dislikes }}</b>
+                    <button id ="dislikes-news" class="btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
                 {% else %}
-                     <button id ="dislikes-news" class="btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+                    <b id="likes-{{ new.id }}">{{ new.likes }}</b>
+                    <button id ="likes-news" data-newsid="{{ new.id }}" class="news-like btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+                    <b id="dislikes-{{ new.id }}">{{ new.dislikes }}</b>
+                    <button id ="dislikes-news" data-newsid="{{ new.id }}" class="news-dislike btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
                 {% endif %}
                 {% if new.comments %}
                     <a href="/share/news/{{ new.id }}/comments">{{ new.comments }} comments</a>

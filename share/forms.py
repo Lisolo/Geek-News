@@ -114,7 +114,7 @@ class reset_form(forms.Form):
     def clean_newpassword2(self):
         if 'newpassword1' in self.cleaned_data and 'newpassword2' in self.cleaned_data:
             if self.cleaned_data['newpassword1'] != self.cleaned_data['newpassword2']:
-                self.add_error('newpassword2', 'The two password fields did not match.')
+                self.add_error('newpassword2', 'The two password fields didn\'t match.')
                 return self
         return self.cleaned_data
 
