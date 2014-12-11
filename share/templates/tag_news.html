@@ -35,16 +35,16 @@
                     ({{ new.views }} view){{ new.time }}
                 {% endif %}
                 <h5>
-                {% if new.like or new.dislike %}
-                    <b id="likes-{{ new.id }}">{{ new.likes }}</b>
-                    <button id ="likes-news" class="btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-                    <b id="dislikes-{{ new.id }}">{{ new.dislikes }}</b>
-                    <button id ="dislikes-news" class="btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+                {% if new.like %}
+                    <button id ="likes-news-{{ new.id }}" data-newsid="{{ new.id }}" class="news-like btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
                 {% else %}
-                    <b id="likes-{{ new.id }}">{{ new.likes }}</b>
-                    <button id ="likes-news" data-newsid="{{ new.id }}" class="news-like btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
-                    <b id="dislikes-{{ new.id }}">{{ new.dislikes }}</b>
-                    <button id ="dislikes-news" data-newsid="{{ new.id }}" class="news-dislike btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+                    <button id ="likes-news-{{ new.id }}" data-newsid="{{ new.id }}" class="news-like btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+                {% endif %}
+                <b id="news-cout-{{ new.id }}">{{ new.cout }}</b>
+                {% if new.dislike %}
+                    <button id ="dislikes-news-{{ new.id }}" data-newsid="{{ new.id }}" class="news-dislike btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+                {% else %}
+                    <button id ="dislikes-news-{{ new.id }}" data-newsid="{{ new.id }}" class="news-dislike btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
                 {% endif %}
                 {% if new.comments %}
                     <a href="/share/news/{{ new.id }}/comments">{{ new.comments }} comments</a>
@@ -64,10 +64,7 @@
                     ({{ new.views }} view){{ new.time }}
                 {% endif %}
                 <h5>
-                <b id="like-new-count">{{ new.likes }}</b>
-                    likes |
-                <b id="dislike-new-count">{{ new.dislikes }}</b>
-                    dislikes
+                <b id="news-count">{{ new.cout }}</b>
                 {% if new.comments %}
                     <a href="/share/news/{{ new.id }}/comments">{{ new.comments }} comments</a>
                 {% else %}

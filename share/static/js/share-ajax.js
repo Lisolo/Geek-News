@@ -15,9 +15,12 @@ $(document).ready(function() {
 		newsid = $(this).attr("data-newsid");
 		$(this).prop("disabled", true);
 		$(this).removeClass();
-		$(this).addClass("btn btn-primary btn-sm");
-		var data = parseInt($('#likes-' + newsid).html()) + 1;
-		$('#likes-' + newsid).html(data);
+		$(this).addClass("news-like btn btn-primary btn-sm");
+		$('#dislikes-news-' + newsid).prop("disabled", false);
+		$('#dislikes-news-' + newsid).removeClass();
+		$('#dislikes-news-' + newsid).addClass("news-dislike btn btn-default btn-sm");
+		var data = parseInt($('#news-cout-' + newsid).html()) + 1;
+		$('#news-cout-' + newsid).html(data);
 		$.get('/share/likes_news/', {news_id: newsid});
 	});
 
@@ -26,9 +29,12 @@ $(document).ready(function() {
 		newsid = $(this).attr("data-newsid");
 		$(this).prop("disabled", true);
 		$(this).removeClass();
-		$(this).addClass("btn btn-primary btn-sm");
-		var data = parseInt($('#dislikes-' + newsid).html()) + 1;
-		$('#dislikes-' + newsid).html(data);
+		$(this).addClass("news-dislike btn btn-primary btn-sm");
+		$('#likes-news-' + newsid).prop("disabled", false);
+		$('#likes-news-' + newsid).removeClass();
+		$('#likes-news-' + newsid).addClass("news-like btn btn-default btn-sm");
+		var data = parseInt($('#news-cout-' + newsid).html()) - 1;
+		$('#news-cout-' + newsid).html(data);
 		$.get('/share/dislikes_news/', {news_id: newsid});
 	});
     

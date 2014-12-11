@@ -142,6 +142,7 @@ def tag_news(request, tag_name_url):
     news_list = News.objects.filter(tag=tag).order_by('-rank')
     for news in news_list:
         news.url = encode_url(news.title)
+        news.cout = news.likes - news.dislikes
         try:
             news.comments = Comments.objects.filter(news=news).count()
         except Comments.DoesNotExist:
@@ -500,6 +501,10 @@ def likes_news(request):
     news_id = request.GET['news_id']
     if news_id:
         news = News.objects.get(id=int(news_id))
+        if news:
+            likes = news.likes + 1
+            news.likes = likes
+            news.save()
         news_author = news.author
         up = UserProfile.objects.get(user=news_author)
         up.reputation += 1
@@ -507,12 +512,11 @@ def likes_news(request):
         # Get the current user
         user = User.objects.get(username=request.user)
         # Save liked news to the database.
-        like_news = LikeNews(user=user, news=news)
-        like_news.save()
-        if news:
-            likes = news.likes + 1
-            news.likes = likes
-            news.save()
+        like_news = LikeNews.objects.get_or_create(user=user, news=news)
+        try:
+            DislikeNews.objects.get(user=user, news=news).delete()
+        except:
+            pass
         return HttpResponse(likes)
 
 @login_required
@@ -520,15 +524,18 @@ def dislikes_news(request):
     news_id = request.GET['news_id']
     if news_id:
         news = News.objects.get(id=int(news_id))
-        # Get the current user
-        user = User.objects.get(username=request.user)
-        # Save disliked news to the database.
-        dislike_news = DislikeNews(user=user, news=news)
-        dislike_news.save()
         if news:
             dislikes = news.dislikes + 1
             news.dislikes = dislikes
             news.save()
+        # Get the current user
+        user = User.objects.get(username=request.user)
+        # Save disliked news to the database.
+        dislike_news = DislikeNews.objects.get_or_create(user=user, news=news)
+        try:
+            LikeNews.objects.get(user=user, news=news).delete()
+        except:
+            pass
         return HttpResponse(dislikes)
 
 def add_comment(request, news_id):
