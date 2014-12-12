@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 from .models import News, Comments, Tag, UserProfile
 
-class UserForm(forms.ModelForm):
+class UserForm(forms.Form):
     username = forms.CharField(help_text="Username")
     username.widget.attrs['class'] = 'input-sm form-control'
 
@@ -24,11 +24,8 @@ class UserForm(forms.ModelForm):
                 return self
         return self.cleaned_data 
 
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'password')
 
-class UserProfileForm(forms.ModelForm):
+class UserProfileForm(forms.Form):
     GENDER = (
         ('F', 'Female'),
         ('M', 'Male'),
@@ -42,28 +39,20 @@ class UserProfileForm(forms.ModelForm):
     picture = forms.ImageField(help_text="Select a profile image to upload.", required=False)
     picture.widget.attrs['type'] = 'file'
     
-    class Meta:
-        model = UserProfile
-        fields = ('website', 'picture', 'gender',)
 
 class CaptchaTestForm(forms.Form):
     captcha = CaptchaField()
     captcha.widget.attrs['class'] = 'input-sm form-control'
 
-class TagForm(forms.ModelForm):
+class TagForm(forms.Form):
     name = forms.CharField(max_length=128, help_text="Please enter the tag name.")
     name.widget.attrs['class'] = 'input-sm form-control'
 
     views = forms.IntegerField(widget=forms.HiddenInput(), initial=0)
     likes = forms.IntegerField(widget=forms.HiddenInput(), initial=0)
 
-    # An inline class to provide additional information on the form.
-    class Meta:
-        # Provide an association between the ModelForm and a model
-        model = Tag
-        fields = ('name', 'views', 'likes')
 
-class NewsForm(forms.ModelForm):
+class NewsForm(forms.Form):
     title = forms.CharField(max_length=128, help_text="Please enter the title of the news.")
     title.widget.attrs['class'] = 'form-control'
 
@@ -83,24 +72,12 @@ class NewsForm(forms.ModelForm):
             cleaned_data['url'] = url
 
         return cleaned_data
+    
 
-    class Meta:
-        # Provide an association between the ModelForm and a model
-        model = News
-
-        # What fields do we want to include in our form?
-        # This way we don't need every field in the model present.
-        # Some fields may allow NULL values, so we may not want to include them...
-        # Here, we are hiding the foreign key.
-        fields = ('title', 'url', 'views',)        
-
-class CommentsForm(forms.ModelForm):
+class CommentsForm(forms.Form):
     content = forms.CharField(widget=forms.Textarea(), label='Enter your comments')
     content.widget.attrs['class'] = 'input-sm form-control'
 
-    class Meta:
-        model = Comments
-        fields = ('content',)  
 
 class reset_form(forms.Form):
     oldpassword = forms.CharField(widget=forms.PasswordInput(), help_text='Password')

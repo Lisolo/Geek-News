@@ -65,7 +65,6 @@ def track_url(request):
     return redirect(url)
 
 def suggest_news(request):
-    cat_list = []
     query = ''
     if request.method == 'GET':
         query = request.GET['suggestion']
@@ -181,7 +180,6 @@ def tag_news(request, tag_name_url):
 
 @login_required
 def like_tag(request):
-    cat_list = []
     if request.method == 'GET':
         tag_id = request.GET['tag_id']
     if tag_id:
@@ -196,19 +194,19 @@ def like_tag(request):
     return HttpResponse(likes)
 
 def books(request):
-    context_dict = {}
     color = ['default', 'primary', 'success', 'info', 'warning', 'danger']
     tag_list = Tag.objects.all().order_by('-likes')
     for tag in tag_list:
         tag.url = encode_url(tag.name)
         tag.color = choice(color)
+    context_dict = {}
     context_dict['tag_list'] = tag_list
     return render(request, 'books.html', context_dict)
 
 def get_books(request, tag_name_url):
     tag_name = decode_url(tag_name_url)
-    context_dict = {}
     news_list = get_news_list()
+    context_dict = {}
     context_dict['news_list'] = news_list
     try:
         user = User.objects.get(username=request.user)
@@ -275,7 +273,6 @@ def get_news(request):
 
 @login_required
 def submit(request):
-    context_dict = {}
     sugg_list = get_news_list()
     context_dict = {}
     context_dict['news_list'] = sugg_list
@@ -314,8 +311,8 @@ def submit(request):
     
 
 def about(request):
-    context_dict = {}
     news_list = get_news_list()
+    context_dict = {}
     context_dict['news_list'] = news_list
     # If the visits session varible exists, take it and use it.
     # If it doesn't, we haven't visited the site so set the count to zero.
@@ -410,13 +407,13 @@ def user_logout(request):
     return HttpResponseRedirect(redirect_to)
 
 def user_profile(request, author):
-    context_dict = {}
     user = User.objects.get(username=author)
     up = UserProfile.objects.get(user=user)
     try:
         current_user = User.objects.get(username=request.user)
     except User.DoesNotExist:
         current_user = None
+    context_dict = {}
     if user == current_user:
         context_dict['reset'] = True
     else:
@@ -440,8 +437,8 @@ def user_profile(request, author):
 
 @login_required
 def profile(request):
-    context_dict = {}
     user = User.objects.get(username=request.user)
+    context_dict = {}
     context_dict['reset'] = True
     try:
         up = UserProfile.objects.get(user=user)
@@ -539,7 +536,6 @@ def dislikes_news(request):
         return HttpResponse(dislikes)
 
 def add_comment(request, news_id):
-    context_dict = {}
     news = News.objects.get(id=news_id)
     if request.method == 'POST':
         comments_form = CommentsForm(data=request.POST)
@@ -560,6 +556,7 @@ def add_comment(request, news_id):
             comment.vote = True
         except:
             comment.vote = False
+    context_dict = {}
     context_dict['comments'] = comments
     context_dict['form'] = comments_form
     context_dict['news_id'] = news_id
@@ -587,7 +584,6 @@ def auto_add_news(request):
     cat_id = None
     url = None
     title = None
-    context_dict = {}
     if request.method == 'GET':
         tag_id = request.GET['tag_id']
         url = request.GET['url']
@@ -598,11 +594,9 @@ def auto_add_news(request):
             news = News.objects.get_or_create(tag=tag, author=u, title=title, url=url)
             news_list = News.objects.filter(tag=tag).order_by('-views')
             # Adds our results list to the template context under name news_list.
-            context_dict['news_list'] = news_list
-    return render(request, 'news_list.html', context_dict)
+    return render(request, 'news_list.html', {'news_list': news_list})
 
 def reset_password(request):
-    context_dict = {}
     if request.method == 'POST':
         form = reset_form(request.POST)
         if form.is_valid():
@@ -622,8 +616,7 @@ def reset_password(request):
                 {'error':'You have entered old password','form': form})
     else:
         form = reset_form()
-    context_dict['form'] = form 
-    return render(request, 'reset_password.html', context_dict)
+    return render(request, 'reset_password.html', {'form': form})
 
 class ResetPasswordRequestView(FormView):
     template_name = "registration/password_reset_email.html"    #code for template is given below the view's code
