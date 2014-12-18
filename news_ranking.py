@@ -1,5 +1,5 @@
 import os
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Startup_News.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Geek_News.settings')
 
 import django
 django.setup()

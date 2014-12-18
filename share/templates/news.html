@@ -9,6 +9,7 @@
 {% block main_col %}
 <div class="col-md-offset-2">
     <div id="news">
+    {% if news %}
     {% load endless %}
     {% paginate news %}
        {% if user.is_authenticated %}
@@ -21,17 +22,16 @@
                     ({{ new.views }} view){{ new.time }}
                 {% endif %}
                 <h5>
-                <b id="likes-{{ new.id }}">{{ new.likes }}</b>
-                {% if not new.like %}
-                    <button id ="likes-news" data-catid="{{ new.id }}" class="news-like btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+                {% if new.like %}
+                    <button id ="likes-news-{{ new.id }}" data-newsid="{{ new.id }}" class="news-like btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
                 {% else %}
-                    <button id ="likes-news" data-catid="{{ new.id }}" class="news-like btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+                    <button id ="likes-news-{{ new.id }}" data-newsid="{{ new.id }}" class="news-like btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-up"></span></button>
                 {% endif %}
-                <b id="dislikes-{{ new.id }}">{{ new.dislikes }}</b>
-                {% if not new.dislike %}
-                    <button id ="dislikes-news" data-catid="{{ new.id }}" class="news-dislike btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+                <b id="news-cout-{{ new.id }}">{{ new.cout }}</b>
+                {% if new.dislike %}
+                    <button id ="dislikes-news-{{ new.id }}" data-newsid="{{ new.id }}" class="news-dislike btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
                 {% else %}
-                     <button id ="likes-news" data-catid="{{ new.id }}" class="news-like btn btn-primary btn-sm" disabled="disabled" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
+                    <button id ="dislikes-news-{{ new.id }}" data-newsid="{{ new.id }}" class="news-dislike btn btn-default btn-sm" type="button"><span class="glyphicon glyphicon-thumbs-down"></span></button>
                 {% endif %}
                 {% if new.comments %}
                     <a href="/share/news/{{ new.id }}/comments">{{ new.comments }} comments</a>
@@ -51,10 +51,7 @@
                     ({{ new.views }} view){{ new.time }}
                 {% endif %}
                 <h5>
-                <b id="like-new-count">{{ new.likes }}</b>
-                    likes |
-                <b id="dislike-new-count">{{ new.dislikes }}</b>
-                    dislikes
+                <b id="news-count">{{ new.cout }}</b>
                 {% if new.comments %}
                     <a href="/share/news/{{ new.id }}/comments">{{ new.comments }} comments</a>
                 {% else %}
@@ -65,6 +62,9 @@
             {% endfor %}
         {% endif %}
     {% show_pages %}
+    {% else %}
+        <strong>No news currently in tag.</strong><br/>
+    {% endif %}
     </div>
 </div>
 </br>

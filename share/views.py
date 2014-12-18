@@ -18,7 +18,7 @@ from django.template import loader
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
-from Startup_News.settings import DEFAULT_FROM_EMAIL
+from Geek_News.settings import DEFAULT_FROM_EMAIL
 
 from django.views.generic import *
 from .forms import PasswordResetRequestForm
@@ -244,10 +244,14 @@ def likes_book(request):
         return HttpResponse(likes)
 
 def get_news(request):
-    user = User.objects.get(username=request.user)
-    news_list = News.objects.all().order_by('-rank')
+    try:
+        user = User.objects.get(username=request.user)
+    except User.DoesNotExist:
+        user = None
+    news_list = News.objects.all()
     for news in news_list:
         news.url = encode_url(news.title)
+        news.cout = news.likes - news.dislikes
         try:
             news.comments = Comments.objects.filter(news=news).count()
         except Comments.DoesNotExist:
@@ -382,7 +386,7 @@ def user_login(request):
                 login(request, user)
                 return HttpResponseRedirect(redirect_to)
             else:
-                return HttpResponse("Your Startup News account is disabled.")
+                return HttpResponse("Your Geek News account is disabled.")
         else:
             try:
                 user = User.objects.get(username=username)
